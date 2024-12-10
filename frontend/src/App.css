@@ -1,0 +1,26 @@
+.App {
+   /* display: flex; 
+   flex-direction: column; 
+   justify-content: center; 
+   align-items: center;  */
+}
+
+p, li{
+  font-family: 'Open Sans';
+  margin: 0;
+}
+
+ul {
+  margin: 0;
+  padding: 0;
+  padding-left: 20px;
+}
+
+a{
+  text-decoration: none;
+  color: #000000;
+}
+
+input[type="radio"]{
+  margin: 0;
+}

@@ -1,0 +1,22 @@
+.btn{
+  display: inline-block;
+  padding: 12px 24px 12px 24px;
+  border: 1.5px solid #151515;
+  border-radius: 18px;
+  color: #151515;
+  font-size: 24px;
+}
+
+.btn div {
+  display: flex;
+  gap: 35px;
+  align-items: center;
+}
+
+.arrow{ 
+  font-size: 30px;
+}
+
+.btn:hover{
+  cursor: pointer;
+}

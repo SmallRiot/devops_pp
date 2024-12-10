@@ -1,0 +1,12 @@
+.btn{
+  padding: 12px 24px;
+  border: solid 1px #148F2B;
+  border-radius: 16px;
+  color: #148F2B;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.btnDisable{
+  display: none;
+}

@@ -1,0 +1,19 @@
+.border {
+  height: 65px;
+  width: 65px;
+  border-radius: 50px;
+  border: 2px solid #148F2B;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.active {
+  border: none;
+  background-color: #148F2B;
+}
+
+.text{
+  font-size: 32px;
+  color: #3B3636;
+}

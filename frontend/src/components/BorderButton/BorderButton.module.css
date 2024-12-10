@@ -1,0 +1,12 @@
+.btn {
+  padding: 12px 24px;
+  border: 2px solid #148F2B;
+  color: #148F2B;
+  font-size: 24px;
+  border-radius: 16px;
+}
+
+.content{ 
+  display: flex;
+  gap: 50px;
+}

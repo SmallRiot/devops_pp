@@ -1,0 +1,9 @@
+.block {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 32px;
+  /* gap: 12px; */
+  align-items: center;
+  /* justify-content: flex-start; */
+}
+

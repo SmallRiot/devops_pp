@@ -1,0 +1,47 @@
+.wrapper {
+  background-color: #151515;
+  border-radius: 55px;
+  margin: 0px 40px 0px 40px;
+  padding: 60px 170px 60px 170px;
+}
+
+.title{
+  margin-bottom: 60px;
+  font-size: 45px;
+  color: #FFFFFF;
+  font-weight: 800;
+}
+
+.container{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+}
+
+.name {
+  font-size: 30px;
+  color: #FFFFFF;
+  margin-bottom: 25px;
+}
+
+.name span{
+  font-weight: 800;
+}
+
+.item3{
+  grid-column: span 2;
+}
+
+.item {
+  padding: 30px;
+}
+
+.item:hover {
+  border-radius: 30px;
+  background-color: #148F2B;
+}
+
+.item:hover .btn{
+  border: 1.5px solid #FFFFFF;
+  color: #FFFFFF;
+}

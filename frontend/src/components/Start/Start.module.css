@@ -1,0 +1,33 @@
+.start{
+  display: flex;
+  flex-direction: column;
+  gap: 50px;
+}
+
+.wrapper {
+  padding: 0px 200px 0px 200px;
+  display: flex;
+  gap: 30px;
+}
+
+.text{
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+li {
+  margin-top: 25px;
+  font-size: 22px;
+}
+
+.title {
+  font-size: 45px;
+}
+
+.wrapper img {
+  border-radius: 50px;
+  border-right: 25px solid #148F2B;
+  border-bottom: 25px solid #148F2B;
+}
+

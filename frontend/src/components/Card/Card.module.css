@@ -1,0 +1,56 @@
+.wrapper {
+  margin: 0px 50px;
+  background-color: #F4F4F4;
+  border-radius: 40px;
+  padding: 60px 160px;
+  display: flex;
+  flex-direction: column;
+  gap: 50px;
+  margin-bottom: 120px; /* Временно */
+
+}
+
+.title {
+  align-self: center;
+  font-size: 32px;
+  font-weight: 600;
+}
+
+.subTitle{
+  font-size: 20px;
+  color: #3B3636;
+  white-space: pre-wrap;
+}
+
+.wrapper .requestBlock{
+  align-self: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.downBlock{
+  margin-top: 110px;
+  padding-right: 50px;
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+}
+
+.rightBlock{
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  font-size: 18px;
+}
+
+.checkBox{
+  height: 40px;
+  width: 40px;
+  border: 2px solid #148F2B;
+  border-radius: 5px;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

@@ -1,0 +1,14 @@
+.box{
+  height: 50px;
+  width: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.box hr{
+  color: #000000;
+  size: 4px;
+  width: 100%;
+  margin: 0;
+}

@@ -1,0 +1,28 @@
+.question {
+  font-size: 24px;
+  color: #3B3636;
+}
+
+.btn {
+  display: flex;
+  gap: 50px;
+  align-items: center;
+}
+
+.requestBlock {
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.requestBlock img {
+  height: 55px;
+  width: 55px;
+}
+
+.paymentBlock{
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}

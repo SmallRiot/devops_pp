@@ -1,0 +1,17 @@
+.wrapper{
+  padding: 0px 200px 0px 200px;
+}
+
+.block{
+  display: flex;
+  align-items: center;
+}
+
+.block img {
+  max-height: 100px;
+}
+
+.block p {
+  font-size: 32px;
+  font-weight: 800;
+}
