@@ -3,7 +3,7 @@ import Cell from "../Cell/Cell";
 import Separator from "../Separator/Separator";
 import classes from "./Subsequence.module.css";
 import { useSelector } from "react-redux";
-import { getPathIndexByName } from "../../redux/slices/docsSlice";
+import { getPathIndexByName } from "../../redux/slices/routesSlice";
 
 const Subsequence = () => {
   const location = useLocation();
@@ -11,8 +11,10 @@ const Subsequence = () => {
   const arr = currentPath.split("/");
   const chapter = arr[arr.length - 1];
   console.log(chapter);
-  const count = useSelector((state) => state.docs.routes.length);
-  const index = useSelector((state) => getPathIndexByName(state.docs, chapter));
+  const count = useSelector((state) => state.routes.routes.length);
+  const index = useSelector((state) =>
+    getPathIndexByName(state.routes, chapter)
+  );
   let current = 0;
   console.log("Subsequence render");
   return (

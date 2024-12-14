@@ -1,24 +1,33 @@
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import classes from "./MoreButton.module.css";
+import { findComponent } from "../../redux/slices/componentsCheckSlice";
+import { useEffect } from "react";
 
 const MoreButton = ({ style, onClick, index, show }) => {
+  const dispatch = useDispatch();
+  const component = useSelector((state) => state.components.foundComponent);
+
+  useEffect(() => {
+    dispatch(findComponent(index));
+  }, [dispatch, index]);
+
   const selected = useSelector((state) => state.radio.selectedOption);
   const check = useSelector((state) => state.name.check);
   const statement = useSelector((state) => state.name.statement);
   const { uploadStatus, uploadError } = useSelector((state) => state.file);
 
   if (
-    selected[index] === "cash" &&
-    check[index].download &&
+    component.paymentType === "cash" &&
+    component.downloadCheck &&
     uploadStatus === "succeeded"
   ) {
     show = true;
   }
 
   if (
-    selected[index] === "nonCash" &&
-    check[index].download &&
-    statement[index].download &&
+    component.paymentType === "nonCash" &&
+    component.downloadCheck &&
+    component.downloadStatement &&
     uploadStatus === "succeeded"
   ) {
     show = true;

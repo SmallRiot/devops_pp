@@ -5,19 +5,27 @@ import BankPage from "./components/BankPage/BankPage";
 import { Route, Routes } from "react-router-dom";
 import Card from "./components/Card/Card";
 import PaymentCard from "./components/PaymentCard/PaymentCard";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import DownloadPage from "./components/DownloadPage/DownloadPage";
+import { useEffect } from "react";
+import { loadRoutesFromLocalStorage } from "./redux/slices/routesSlice";
 
 function App() {
-  const arr = useSelector((state) => state.docs.routes);
+  const dispatch = useDispatch();
+  const routes = useSelector((state) => state.routes.routes);
+  useEffect(() => {
+    dispatch(loadRoutesFromLocalStorage());
+  }, [dispatch]);
+
   console.log("APP render");
+
   return (
     <div className="App">
       <Header />
       <Routes>
         <Route path="" element={<Start />} />
         <Route path="/bank" element={<BankPage />}>
-          {arr.map((el) => {
+          {routes.map((el) => {
             if (el.initPath !== "/bank/checks") {
               return <Route path={el.initPath} element={<Card obj={el} />} />;
             } else {

@@ -11,6 +11,7 @@ from core.serializers import DocumentSerializer
 from core.converters import FileConverter
 from core.doc_services import DataInspector,remove_dir,check_is_file_exist_and_delete,delete_garbage_file
 from backend.transcriber import *
+from rest_framework import serializers
 
 
 def index(request):
@@ -25,17 +26,35 @@ class DocumentViewSet(viewsets.ModelViewSet):
 
     def create(self, request, *args, **kwargs):
 
-        if not request.session.session_key:
+        # if not request.session.session_key:
+        if not request.COOKIES.get('mainSessionId'):
             request.session.create()
+            print("Create new sessionId")
+        else:
+            print("SessionId on back: " + request.COOKIES.get('mainSessionId'))
+        
+        
 
-        session_id = request.session.session_key
+        session_id = request.COOKIES.get('mainSessionId')
         request.session['session_id'] = session_id
 
         serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
+
+        try:
+            serializer.is_valid(raise_exception=True)
+        except serializers.ValidationError as e:
+            # Извлекаем сообщение об ошибке из e.detail
+            error_message = e.detail.get('path', [])
+            if error_message:
+                error_message = error_message[0]
+            return JsonResponse({'message': error_message}, status=400)
+
         name, ext = os.path.splitext(request.FILES.get('path').name)
 
-        self.perform_create(serializer,name, session_id)
+        try:
+            self.perform_create(serializer, name, session_id)
+        except Exception as e:
+            return JsonResponse({'message': str(e)}, status=500)
         auth_token = 'OTMyNmM1MGQtZDEyZS00NjViLThiYWMtNTU4ZWJiYWJkZmE2OmUzYmE1NjBiLTM4Y2YtNDc0ZC1hN2QzLWEyMzYzMWJjODFmNQ=='
 
         # Первое заявление
@@ -389,17 +408,19 @@ class CombineImagesToPDFView(APIView):
             converter = FileConverter()
             output_pdf_path = converter.convert_images_to_pdf(request.session.session_key)
             if not os.path.exists(output_pdf_path):
-                return JsonResponse({'error': 'PDF file could not be created.'},
-                                    status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                return JsonResponse({'message': 'Не удалось создать PDF-файл'},
+                                    status=500)
 
             with open(output_pdf_path, 'rb') as pdf_file:
                 response = HttpResponse(pdf_file.read(), content_type='application/pdf')
                 response['Content-Disposition'] = f'attachment; filename="{request.session.session_key}_combined.pdf"'
                 return response
         except Document.DoesNotExist:
-            return JsonResponse({'error': 'Session ID not found.'}, status=status.HTTP_404_NOT_FOUND)
+            return JsonResponse(
+                {'message': 'Идентификатор сеанса (Session_id) не найден'}, status=404)
         except Exception as e:
-            return JsonResponse({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return JsonResponse(
+                {'message': str(e)}, status=500)
 
 class UserDataView(APIView):
 
@@ -413,4 +434,4 @@ class UserDataView(APIView):
                 return response
             return JsonResponse({'message': 'Success'}, status=200)
         except Exception as e:
-            return JsonResponse({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return JsonResponse({'message': str(e)}, status=500)

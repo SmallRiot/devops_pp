@@ -53,8 +53,18 @@ const nameSlice = createSlice({
         name: action.payload.name,
       };
     },
+    initCheckStatement: (state, action) => {
+      state.check[action.payload] = {
+        download: false,
+        name: "",
+      };
+      state.statement[action.payload] = {
+        download: false,
+        name: "",
+      };
+    },
   },
 });
 
-export const { setCheck, setStatement } = nameSlice.actions;
+export const { setCheck, setStatement, initCheckStatement } = nameSlice.actions;
 export default nameSlice.reducer;

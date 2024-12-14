@@ -2,28 +2,26 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
+const apiUrl = process.env.REACT_APP_API_URL;
+
 export const uploadFile = createAsyncThunk(
   "file/uploadFile",
   async (file, { rejectWithValue }) => {
     const formData = new FormData();
     formData.append("path", file);
-
     try {
-      const response = await axios.post(
-        "http://127.0.0.1:8000/api/documents/",
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-          withCredentials: true,
-        }
-      );
+      const response = await axios.post(`${apiUrl}/api/documents/`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+        withCredentials: true,
+      });
 
       return response.data;
     } catch (error) {
+      console.log("Error to response: " + error.response.data);
       return error.response
-        ? rejectWithValue(error.response.data.path)
+        ? rejectWithValue(error.response.data)
         : rejectWithValue("Отсутствует соединение с сервером");
     }
   }
@@ -33,17 +31,13 @@ export const downloadFile = createAsyncThunk(
   "file/downloadFile",
   async (id, { rejectWithValue }) => {
     try {
-      console.log("request");
-      const response = await axios.get(
-        "http://127.0.0.1:8000/api/api/combine_pdf",
-        {
-          responseType: "blob",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          withCredentials: true,
-        }
-      );
+      const response = await axios.get(`${apiUrl}/api/api/combine_pdf`, {
+        responseType: "blob",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        withCredentials: true,
+      });
       console.log(response.data.path);
       return response.data;
     } catch (error) {

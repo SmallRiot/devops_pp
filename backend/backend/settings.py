@@ -34,12 +34,17 @@ REST_FRAMEWORK = {
     ),
 }
 
+# SESSION_COOKIE_SAMESITE = 'Lax'  
+# CSRF_COOKIE_SAMESITE = 'Lax'  
+
 CORS_ALLOW_CREDENTIALS = True
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
-    "http://localhost", 
+    "http://localhost",
     "http://127.0.0.1",
+    "http://127.0.0.1:8000",
+    "http://localhost:8000",
 ]
 
 CORS_ALLOW_METHODS = [
@@ -61,6 +66,8 @@ CORS_ALLOW_HEADERS = [
     'user-agent',
     'x-csrftoken',
     'x-requested-with',
+    'x-session-id',
+    'cookie',
 ]
 
 INSTALLED_APPS = [

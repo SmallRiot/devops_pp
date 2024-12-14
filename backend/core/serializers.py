@@ -19,6 +19,6 @@ class DocumentSerializer(serializers.ModelSerializer):
 
         if file_extension not in allowed_extensions:
             logger.warning("Attempt to upload a file with an unsupported extension: %s", value.name)
-            raise serializers.ValidationError("Only JPEG, JPG, PDF, HEIF/HEIC and PNG files are allowed.")
+            raise serializers.ValidationError("Разрешены только файлы в форматах JPEG, JPG, PDF, HEIF/HEIC и PNG")
 
         return value

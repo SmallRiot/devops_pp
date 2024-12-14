@@ -2,7 +2,10 @@ import { Link } from "react-router-dom";
 import SubmitButton from "../SubmitButton/SubmitButton";
 import classes from "./SelectBlock.module.css";
 import { useDispatch } from "react-redux";
-import { setRouts } from "../../redux/slices/docsSlice";
+import {
+  saveRoutesFromLocalStorage,
+  setRouts,
+} from "../../redux/slices/routesSlice";
 import { all, franchise, medical, titles } from "../../mock/docs";
 import { setTitle } from "../../redux/slices/titleSlice";
 
@@ -18,7 +21,7 @@ const SelectBlock = () => {
             <div
               className={classes.item}
               onClick={() => {
-                dispatch(setRouts(franchise));
+                dispatch(saveRoutesFromLocalStorage(franchise));
                 dispatch(setTitle(titles[0]));
               }}
             >
@@ -32,7 +35,7 @@ const SelectBlock = () => {
             <div
               className={classes.item}
               onClick={() => {
-                dispatch(setRouts(medical));
+                dispatch(saveRoutesFromLocalStorage(medical));
                 dispatch(setTitle(titles[1]));
               }}
             >
@@ -46,7 +49,7 @@ const SelectBlock = () => {
             <div
               className={classes.item}
               onClick={() => {
-                dispatch(setRouts(all));
+                dispatch(saveRoutesFromLocalStorage(all));
                 dispatch(setTitle(titles[2]));
               }}
             >

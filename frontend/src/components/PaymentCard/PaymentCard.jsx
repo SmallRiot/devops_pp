@@ -6,7 +6,12 @@ import BorderButton from "../BorderButton/BorderButton";
 import { useEffect, useRef, useState } from "react";
 import { renameFile, renameFileStatement } from "../../utils/converter";
 import { initUploadFile, uploadFile } from "../../redux/slices/fileSlice";
-import { setCheck, setStatement } from "../../redux/slices/nameSlice";
+import { addComponent } from "../../redux/slices/componentsCheckSlice";
+import {
+  initCheckStatement,
+  setCheck,
+  setStatement,
+} from "../../redux/slices/nameSlice";
 import success from "../../assets/success.png";
 import { setFreeze } from "../../redux/slices/radioSlice";
 import { TailSpin } from "react-loader-spinner";
@@ -15,7 +20,11 @@ import MoreButton from "../MoreButton/MoreButton";
 
 const PaymentCard = ({ obj }) => {
   const dispatch = useDispatch();
+  //
+  // Достаем из локального хранилища компоненты
+  //
   // const selected = useSelector((state) => state.radio.selectedOption);
+  const components = useSelector((state) => state.components.components);
   // const check = useSelector((state) => state.name.check);
   // const statement = useSelector((state) => state.name.statement);
   const { uploadStatus, uploadError } = useSelector((state) => state.file);
@@ -24,11 +33,12 @@ const PaymentCard = ({ obj }) => {
   // const choice = useRef("");
   // const [nameCheck, setNameCheck] = useState("");
   // const [nameStatement, setNameStatement] = useState("");
-  const [components, setComponents] = useState([{ id: 0 }]);
+  // const [components, setComponents] = useState([{ id: 0 }]);
   // const [render, setRender] = useState("");
 
   const handleClickMore = () => {
-    setComponents((prevData) => [...prevData, { id: prevData.length }]);
+    // setComponents((prevData) => [...prevData, { id: prevData.length }]);
+    // dispatch(addComponent());
   };
 
   const handleUpload = () => {
@@ -37,14 +47,16 @@ const PaymentCard = ({ obj }) => {
     // }
   };
 
-  console.log("render PaymentCard");
+  console.log("render PaymentCard " + JSON.stringify(components, null, 2));
   return (
     <div className={classes.wrapper}>
       <p className={classes.title}>{obj.title}</p>
       <p className={classes.subTitle}>{obj.subTitle}</p>
       <div className={classes.controller}>
         {components.map((el) => {
-          console.log("Id components: " + el.id);
+          console.log(
+            "Component N" + el.id + "   " + JSON.stringify(el, null, 2)
+          );
           return (
             <CheckController key={el.id} title={obj.title} index={el.id} />
           );
@@ -53,8 +65,15 @@ const PaymentCard = ({ obj }) => {
       {/* {uploadStatus === "failed" && (
         <p
           onClick={() => {
+            console.log("Id render: " + components[components.length - 1].id);
             dispatch(initUploadFile());
-            dispatch(setFreeze({ freeze: true, index: index }));
+            dispatch(
+              setFreeze({
+                freeze: false,
+                index: components[components.length - 1].id,
+              })
+            );
+            dispatch(initCheckStatement(components.length - 1));
             setRender("123");
           }}
         >
@@ -62,22 +81,10 @@ const PaymentCard = ({ obj }) => {
         </p>
       )} */}
       <div className={classes.downBlock}>
-        {/* {selected[0] === "cash" &&
-          check[0].download &&
-          uploadStatus === "succeeded" && (
-            <div onClick={handleClickMore} className={classes.btn}>
-              <p>Button</p>
-            </div>
-          )}
-        {selected[0] === "nonCash" &&
-          check[0].download &&
-          statement[0].download &&
-          uploadStatus === "succeeded" && (
-            <div onClick={handleClickMore} className={classes.btn}>
-              <p>Button</p>
-            </div>
-          )} */}
-        <MoreButton index={components.length - 1} onClick={handleClickMore} />
+        <MoreButton
+          index={components.length - 1}
+          onClick={() => dispatch(addComponent())}
+        />
         <BorderButton
           onClick={handleUpload}
           path={obj.path}

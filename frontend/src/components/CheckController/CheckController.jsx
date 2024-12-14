@@ -3,7 +3,7 @@ import DownloadButton from "../DownloadButton/DownloadButton";
 import RadioButtons from "../RadioButtons/RadioButtons";
 import classes from "./CheckController.module.css";
 import BorderButton from "../BorderButton/BorderButton";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { renameFileCheck, renameFileStatement } from "../../utils/converter";
 import { uploadFile } from "../../redux/slices/fileSlice";
 import { setCheck, setStatement } from "../../redux/slices/nameSlice";
@@ -11,10 +11,18 @@ import success from "../../assets/success.png";
 import errorImg from "../../assets/errorImg.png";
 import { setFreeze } from "../../redux/slices/radioSlice";
 import { TailSpin } from "react-loader-spinner";
+import {
+  findComponent,
+  updateCheck,
+  updateFreeze,
+  updateStatement,
+} from "../../redux/slices/componentsCheckSlice";
 
 const CheckController = ({ title, index }) => {
   const dispatch = useDispatch();
-  const selected = useSelector((state) => state.radio.selectedOption);
+  const component = useSelector((state) => state.components.foundComponent);
+
+  // const selected = useSelector((state) => state.radio.selectedOption);
   const check = useSelector((state) => state.name.check);
   const statement = useSelector((state) => state.name.statement);
   const { uploadStatus, uploadError } = useSelector((state) => state.file);
@@ -22,22 +30,28 @@ const CheckController = ({ title, index }) => {
   const statementInputRef = useRef(null);
   const choice = useRef("");
 
+  useEffect(() => {
+    dispatch(findComponent(index));
+  }, [dispatch, index]);
+
   const handleFileChange = (event) => {
     const file = event.target.files[0];
     if (file) {
       let newFile;
       if (choice.current === "check") {
         newFile = renameFileCheck(file, index);
-        dispatch(setCheck({ download: true, name: file.name, index: index }));
+        dispatch(
+          updateCheck({ download: true, name: file.name, index: index })
+        );
       } else {
         newFile = renameFileStatement(file, index);
         dispatch(
-          setStatement({ download: true, name: file.name, index: index })
+          updateStatement({ download: true, name: file.name, index: index })
         );
       }
 
       dispatch(uploadFile(newFile));
-      dispatch(setFreeze({ freeze: true, index: index }));
+      dispatch(updateFreeze({ freeze: true, index: index }));
     }
   };
 
@@ -50,12 +64,17 @@ const CheckController = ({ title, index }) => {
     choice.current = "statement";
     statementInputRef.current.click();
   };
-
+  console.log(
+    "CheckController with id :" +
+      index +
+      "   " +
+      JSON.stringify(component, null, 2)
+  );
   return (
     <div className={classes.paymentBlock}>
       <p className={classes.question}>Как производилась оплата?</p>
       <RadioButtons index={index} />
-      {selected[index] === "cash" && (
+      {component.paymentType === "cash" && (
         <div style={{ display: "flex" }}>
           <input
             type="file"
@@ -63,17 +82,17 @@ const CheckController = ({ title, index }) => {
             style={{ display: "none" }}
             ref={checkInputRef}
           />
-          {!check[index].download && (
+          {!component.downloadCheck && (
             <DownloadButton
               onClick={handleUploadCheckClick}
               text={"Загрузите чек"}
               style={{ padding: "10px 45px", fontSize: "20px" }}
             />
           )}
-          {uploadStatus === "succeeded" && check[index].download && (
+          {uploadStatus === "succeeded" && component.downloadCheck && (
             <div className={classes.requestBlock}>
               <img src={success} />
-              <p>{check[index].name}</p>
+              <p>{component.nameCheck}</p>
             </div>
           )}
           {/* {uploadStatus === "loading" && (
@@ -89,7 +108,7 @@ const CheckController = ({ title, index }) => {
           )}
         </div>
       )}
-      {selected[index] === "nonCash" && (
+      {component.paymentType === "nonCash" && (
         <div className={classes.btn}>
           <input
             type="file"
@@ -97,7 +116,7 @@ const CheckController = ({ title, index }) => {
             style={{ display: "none" }}
             ref={checkInputRef}
           />
-          {!check[index].download && (
+          {!component.downloadCheck && (
             <DownloadButton
               onClick={handleUploadCheckClick}
               text={"Загрузите чек"}
@@ -105,13 +124,13 @@ const CheckController = ({ title, index }) => {
                 padding: "10px 45px",
                 fontSize: "20px",
               }}
-              freeze={!statement[index].download}
+              freeze={!component.downloadStatement}
             />
           )}
-          {uploadStatus === "succeeded" && check[index].download && (
+          {uploadStatus === "succeeded" && component.downloadCheck && (
             <div className={classes.requestBlock}>
               <img src={success} />
-              <p>{check[index].name}</p>
+              <p>{component.nameCheck}</p>
             </div>
           )}
           {/* {uploadStatus === "loading" && !check[index].download && (
@@ -125,17 +144,17 @@ const CheckController = ({ title, index }) => {
             style={{ display: "none" }}
             ref={statementInputRef}
           />
-          {!statement[index].download && (
+          {!component.downloadStatement && (
             <DownloadButton
               onClick={handleUploadStatementClick}
               text={"Загрузите выписку"}
               style={{ padding: "10px 45px", fontSize: "20px" }}
             />
           )}
-          {uploadStatus === "succeeded" && statement[index].download && (
+          {uploadStatus === "succeeded" && component.downloadStatement && (
             <div className={classes.requestBlock}>
               <img src={success} />
-              <p>{statement[index].name}</p>
+              <p>{component.nameStatement}</p>
             </div>
           )}
           {/* {uploadStatus === "loading" && (
