@@ -1,10 +1,10 @@
 import io
 import os
 from PIL import Image
+from PyPDF2 import PdfReader, PdfWriter
 from django.core.files.base import ContentFile
 from pdf2image import convert_from_bytes
 from django.conf import settings
-from PyPDF2 import PdfReader, PdfWriter
 
 import re
 
@@ -53,11 +53,7 @@ class FileConverter:
 
     def process_file(self):
         """Обрабатывает файл в зависимости от типа и возвращает список файлов для сохранения."""
-        if self.file_ext == '.png':
-            # Если уже PNG, возвращаем исходный файл
-            return [(self.file, self.file.name)]
-        else:
-            return self._process_image()
+        return self._process_image_to_pdf()
 
     def _process_image(self):
         """Обработка других изображений (не PNG). Конвертирует изображение в PNG."""
@@ -68,6 +64,16 @@ class FileConverter:
         temp_img.seek(0)
         filename = f"{self.name}.png"
         return [(ContentFile(temp_img.read()), filename)]
+
+    def _process_image_to_pdf(self):
+        """Обработка изображения и конвертация его в PDF."""
+        img = Image.open(self.file)
+        img = img.convert("RGB")
+        temp_pdf = io.BytesIO()
+        img.save(temp_pdf, format="PDF")
+        temp_pdf.seek(0)
+        filename = f"{self.name}.pdf"
+        return [(ContentFile(temp_pdf.read()), filename)]
 
     def convert_images_to_pdf(self, session_id):
         from core.models import MedicalInsurance, Document

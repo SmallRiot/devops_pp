@@ -54,10 +54,7 @@ class Document(models.Model):
 
 
         if self.path:
-            if self.path.name.endswith('.png'):
-                final_filename = f"{self.name}.png"
-                self.path.name = os.path.join(final_path, final_filename)
-            elif self.path.name.endswith('.pdf'):
+            if self.path.name.endswith('.pdf'):
                 self.path.name = os.path.join(final_path, self.path.name)
             else:
                 converter = FileConverter(self.path, self.name)

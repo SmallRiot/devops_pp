@@ -36,7 +36,7 @@ class DocumentViewSet(viewsets.ModelViewSet):
         name, ext = os.path.splitext(request.FILES.get('path').name)
 
         self.perform_create(serializer,name, session_id)
-        auth_token = ''
+        auth_token = 'OTMyNmM1MGQtZDEyZS00NjViLThiYWMtNTU4ZWJiYWJkZmE2OmUzYmE1NjBiLTM4Y2YtNDc0ZC1hN2QzLWEyMzYzMWJjODFmNQ=='
 
         # Первое заявление
         statement1 = '''
@@ -203,106 +203,71 @@ class DocumentViewSet(viewsets.ModelViewSet):
 
 
         saved_instance = serializer.instance
-
         rquid = str(uuid.uuid4())
 
         access_token = get_access_token(rquid, auth_token)
 
         img_path = saved_instance.path.name
-        if(ext == '.pdf'):
-            sourse_id = load_pdf(access_token, img_path)
-            if ("statement" in saved_instance.name):
-                info = get_statement_info(access_token, sourse_id)
-            elif ("cert_about_paid_franchise_VMI" in saved_instance.name):
-                info = get_reference_six_info(access_token, sourse_id)
-            else:
-                info = get_info(access_token, sourse_id)
-        else:
-            sourse_id = load_img(access_token, img_path)
+        sourse_id = load_pdf(access_token, img_path)
+        if ("statement" in saved_instance.name):
+            info = get_statement_info(access_token, sourse_id)
+        elif ("cert_about_paid_franchise_VMI" in saved_instance.name):
+            info = get_reference_six_info(access_token, sourse_id)
+        elif not ("cheque" in saved_instance.name):
+            info = get_info(access_token, sourse_id)
 
         if ("marriage_certificate" in saved_instance.name):
-            if (ext == '.pdf'):
-                res = marriage_response(info, auth_token)
-            else:
-                res = process_marriage_certificate(access_token, sourse_id)
-
+            res = marriage_response(info, auth_token)
             inspector = DataInspector(json.dumps(res))
             response = inspector.check_marriage_certificate(session_id)
             if (response.status_code == 400):
                 delete_garbage_file(saved_instance.id)
                 return response
-        elif ("statement" in saved_instance.name and ext == '.pdf'):
-            if (ext == '.pdf'):
-                res = statement_response(info, auth_token)
-                inspector = DataInspector(json.dumps(res))
-                response = inspector.check_statement(session_id)
-            else:
-                response = JsonResponse({'message': "Неверный формат файла, ожидается: PDF"}, status=400)
-
-
+        elif ("statement" in saved_instance.name):
+            res = statement_response(info, auth_token)
+            inspector = DataInspector(json.dumps(res))
+            response = inspector.check_statement(session_id)
             if (response.status_code == 400):
                 delete_garbage_file(saved_instance.id)
                 return response
         if ("birth_certificate" in saved_instance.name):
-            if (ext == '.pdf'):
-                res = birth_response(info, auth_token)
-            else:
-                res = process_birth_certificate(access_token, sourse_id)
+            res = birth_response(info, auth_token)
             inspector = DataInspector(json.dumps(res))
             response = inspector.check_birth_certificate(session_id)
             if (response.status_code == 400):
                 delete_garbage_file(saved_instance.id)
                 return response
         elif ("cert_of_payment_med_services" in saved_instance.name):
-            if(ext == '.pdf'):
-                res = double_page_response(info, auth_token)
-                inspector = DataInspector(json.dumps(res))
-                response = inspector.check_payment_reference(session_id)
-            else:
-                response = JsonResponse({'message': "Неверный формат файла, ожидается: PDF"}, status=400)
-
+            res = double_page_response(info, auth_token)
+            inspector = DataInspector(json.dumps(res))
+            response = inspector.check_payment_reference(session_id)
 
             if (response.status_code == 400):
                 delete_garbage_file(saved_instance.id)
                 return response
         elif ("insurance_policy_VMI" in saved_instance.name):
-            if (ext == '.pdf'):
-                res = insurance_response(info, auth_token)
-            else:
-                res = process_insurance(access_token, sourse_id)
-
+            res = insurance_response(info, auth_token)
             inspector = DataInspector(json.dumps(res))
             response = inspector.check_policy(session_id)
             if (response.status_code == 400):
                 delete_garbage_file(saved_instance.id)
                 return response
         elif ("cert_about_paid_franchise_VMI" in saved_instance.name):
-            if(ext == '.pdf'):
-                res = reference_six_response(info, auth_token)
-                inspector = DataInspector(json.dumps(res))
-                response = inspector.check_policy_reference(session_id)
-            else:
-                response = JsonResponse({'message': "Неверный формат файла, ожидается: PDF"}, status=400)
+            res = reference_six_response(info, auth_token)
+            inspector = DataInspector(json.dumps(res))
+            response = inspector.check_policy_reference(session_id)
             if (response.status_code == 400):
                 delete_garbage_file(saved_instance.id)
                 return response
         elif ("cheque" in saved_instance.name):
-            if (ext == '.pdf'):
-                res = receipt_response(info, auth_token)
-            else:
-                res = process_reciept(access_token, sourse_id)
-
-            inspector = DataInspector(json.dumps(res))
+            res = get_reciept_info(access_token, sourse_id)
+            inspector = DataInspector(res)
             response = inspector.check_cheque(session_id)
             if (response.status_code == 400):
                 delete_garbage_file(saved_instance.id)
                 return response
         elif ("bank_reference" in saved_instance.name):
-            if (ext == '.pdf'):
-                res = reference_response(info, auth_token)
-            else:
-                res = process_reference(access_token, sourse_id)
-
+            res = reference_response(info, auth_token)
             inspector = DataInspector(json.dumps(res))
             response = inspector.check_cheque_reference(session_id)
             if (response.status_code == 400):

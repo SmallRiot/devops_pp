@@ -19,12 +19,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get('SECRET_KEY')
+SECRET_KEY = 'django-insecure-jot=&@n=%y%e6b1c4+w)j-85u$c7rnlc1bs+m)3&&z9pl5uc0^'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DEBUG', 'False') == 'True'
+DEBUG = True
 
-ALLOWED_HOSTS = 'localhost 127.0.0.1'.split(' ')
+ALLOWED_HOSTS = []
 
 # Application definition
 REST_FRAMEWORK = {
@@ -34,14 +34,12 @@ REST_FRAMEWORK = {
     ),
 }
 
-
-STATIC_ROOT = BASE_DIR / "staticfiles"
-
-
 CORS_ALLOW_CREDENTIALS = True
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
+    "http://localhost", 
+    "http://127.0.0.1",
 ]
 
 CORS_ALLOW_METHODS = [

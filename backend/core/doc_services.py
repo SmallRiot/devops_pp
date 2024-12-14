@@ -79,7 +79,7 @@ def delete_garbage_file(id):
     doc.delete()
 
 def check_is_file_exist_and_delete(_file_name,_session_id):
-    doc = Document.objects.filter(name=_file_name+"_" +_session_id, session_id=_session_id).first()
+    doc = Document.objects.filter(name=_file_name, session_id=_session_id).first()
     if doc:
         delete_garbage_file(doc.id)
 
