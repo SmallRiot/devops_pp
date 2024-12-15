@@ -37,6 +37,7 @@ class DocumentViewSet(viewsets.ModelViewSet):
 
         session_id = request.COOKIES.get('mainSessionId')
         request.session['session_id'] = session_id
+        # request.session.save()
 
         serializer = self.get_serializer(data=request.data)
 
@@ -406,14 +407,14 @@ class CombineImagesToPDFView(APIView):
     def get(self, request):
         try:
             converter = FileConverter()
-            output_pdf_path = converter.convert_images_to_pdf(request.session.session_key)
+            output_pdf_path = converter.convert_images_to_pdf(request.COOKIES.get('mainSessionId')) # request.session.session_key
             if not os.path.exists(output_pdf_path):
                 return JsonResponse({'message': 'Не удалось создать PDF-файл'},
                                     status=500)
 
             with open(output_pdf_path, 'rb') as pdf_file:
                 response = HttpResponse(pdf_file.read(), content_type='application/pdf')
-                response['Content-Disposition'] = f'attachment; filename="{request.session.session_key}_combined.pdf"'
+                response['Content-Disposition'] = f'attachment; filename="{request.COOKIES.get("mainSessionId")}_combined.pdf"'
                 return response
         except Document.DoesNotExist:
             return JsonResponse(
@@ -426,7 +427,7 @@ class UserDataView(APIView):
 
     def delete(self, request):
         try:
-            session_id=request.session.session_key
+            session_id=request.COOKIES.get('mainSessionId')
             base_folder = os.path.join(settings.MEDIA_ROOT, 'backend/documents', session_id)
 
             response = remove_dir(session_id, base_folder)
