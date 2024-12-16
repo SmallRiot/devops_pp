@@ -233,6 +233,8 @@ class DocumentViewSet(viewsets.ModelViewSet):
             info = get_statement_info(access_token, sourse_id)
         elif ("cert_about_paid_franchise_VMI" in saved_instance.name):
             info = get_reference_six_info(access_token, sourse_id)
+        elif ("marriage_certificate" in saved_instance.name):
+            info = get_marriage_info(access_token, sourse_id)
         elif not ("cheque" in saved_instance.name):
             info = get_info(access_token, sourse_id)
 
@@ -240,21 +242,21 @@ class DocumentViewSet(viewsets.ModelViewSet):
             res = marriage_response(info, auth_token)
             inspector = DataInspector(json.dumps(res))
             response = inspector.check_marriage_certificate(session_id)
-            if (response.status_code == 400):
+            if (response.status_code == 400 or response.status_code == 500):
                 #delete_garbage_file(saved_instance.id)
                 return response
         elif ("statement" in saved_instance.name):
             res = statement_response(info, auth_token)
             inspector = DataInspector(json.dumps(res))
             response = inspector.check_statement(session_id)
-            if (response.status_code == 400):
+            if (response.status_code == 400 or response.status_code == 500):
                 #delete_garbage_file(saved_instance.id)
                 return response
         if ("birth_certificate" in saved_instance.name):
             res = birth_response(info, auth_token)
             inspector = DataInspector(json.dumps(res))
             response = inspector.check_birth_certificate(session_id)
-            if (response.status_code == 400):
+            if (response.status_code == 400 or response.status_code == 500):
                 #delete_garbage_file(saved_instance.id)
                 return response
         elif ("cert_of_payment_med_services" in saved_instance.name):
@@ -262,35 +264,35 @@ class DocumentViewSet(viewsets.ModelViewSet):
             inspector = DataInspector(json.dumps(res))
             response = inspector.check_payment_reference(session_id)
 
-            if (response.status_code == 400):
+            if (response.status_code == 400 or response.status_code == 500):
                 #delete_garbage_file(saved_instance.id)
                 return response
         elif ("insurance_policy_VMI" in saved_instance.name):
             res = insurance_response(info, auth_token)
             inspector = DataInspector(json.dumps(res))
             response = inspector.check_policy(session_id)
-            if (response.status_code == 400):
+            if (response.status_code == 400 or response.status_code == 500):
                 #delete_garbage_file(saved_instance.id)
                 return response
         elif ("cert_about_paid_franchise_VMI" in saved_instance.name):
             res = reference_six_response(info, auth_token)
             inspector = DataInspector(json.dumps(res))
             response = inspector.check_policy_reference(session_id)
-            if (response.status_code == 400):
+            if (response.status_code == 400 or response.status_code == 500):
                 #delete_garbage_file(saved_instance.id)
                 return response
         elif ("cheque" in saved_instance.name):
             res = get_reciept_info(access_token, sourse_id)
             inspector = DataInspector(res)
             response = inspector.check_cheque(session_id)
-            if (response.status_code == 400):
+            if (response.status_code == 400 or response.status_code == 500):
                 #delete_garbage_file(saved_instance.id)
                 return response
         elif ("bank_reference" in saved_instance.name):
             res = reference_response(info, auth_token)
             inspector = DataInspector(json.dumps(res))
             response = inspector.check_cheque_reference(session_id)
-            if (response.status_code == 400):
+            if (response.status_code == 400 or response.status_code == 500):
                 #delete_garbage_file(saved_instance.id)
                 return response
         # if ("marriage_certificate" in saved_instance.name):
