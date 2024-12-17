@@ -27,7 +27,7 @@ const PaymentCard = ({ obj }) => {
   const components = useSelector((state) => state.components.components);
   // const check = useSelector((state) => state.name.check);
   // const statement = useSelector((state) => state.name.statement);
-  const { uploadStatus, uploadError } = useSelector((state) => state.file);
+  // const { uploadStatus, uploadError } = useSelector((state) => state.file);
   // const checkInputRef = useRef(null);
   // const statementInputRef = useRef(null);
   // const choice = useRef("");
@@ -57,9 +57,7 @@ const PaymentCard = ({ obj }) => {
           console.log(
             "Component N" + el.id + "   " + JSON.stringify(el, null, 2)
           );
-          return (
-            <CheckController key={el.id} title={obj.title} index={el.id} />
-          );
+          return <CheckController key={el.id} component={el} index={el.id} />;
         })}
       </div>
       {/* {uploadStatus === "failed" && (

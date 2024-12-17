@@ -1,9 +1,9 @@
-import { useDispatch, useSelector } from "react-redux";
+import { createSelectorHook, useDispatch, useSelector } from "react-redux";
 import DownloadButton from "../DownloadButton/DownloadButton";
 import RadioButtons from "../RadioButtons/RadioButtons";
 import classes from "./CheckController.module.css";
 import BorderButton from "../BorderButton/BorderButton";
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { renameFileCheck, renameFileStatement } from "../../utils/converter";
 import { uploadFile } from "../../redux/slices/fileSlice";
 import { setCheck, setStatement } from "../../redux/slices/nameSlice";
@@ -18,21 +18,22 @@ import {
   updateStatement,
 } from "../../redux/slices/componentsCheckSlice";
 
-const CheckController = ({ title, index }) => {
+const CheckController = React.memo(({ component, index }) => {
   const dispatch = useDispatch();
-  const component = useSelector((state) => state.components.foundComponent);
-
+  // const component = useSelector((state) => state.components.foundComponent);
+  // const component = useSelector((state) => state.components.foundComponent);
   // const selected = useSelector((state) => state.radio.selectedOption);
-  const check = useSelector((state) => state.name.check);
-  const statement = useSelector((state) => state.name.statement);
-  const { uploadStatus, uploadError } = useSelector((state) => state.file);
+  // const check = useSelector((state) => state.name.check);
+  // const statement = useSelector((state) => state.name.statement);
+  const { uploadCheckStatus, uploadCheckError, uploadStatus, uploadError } =
+    useSelector((state) => state.file);
   const checkInputRef = useRef(null);
   const statementInputRef = useRef(null);
   const choice = useRef("");
 
-  useEffect(() => {
-    dispatch(findComponent(index));
-  }, [dispatch, index]);
+  // useEffect(() => {
+  //   dispatch(findComponent(index));
+  // }, []);
 
   const handleFileChange = (event) => {
     const file = event.target.files[0];
@@ -73,7 +74,7 @@ const CheckController = ({ title, index }) => {
   return (
     <div className={classes.paymentBlock}>
       <p className={classes.question}>Как производилась оплата?</p>
-      <RadioButtons index={index} />
+      <RadioButtons component={component} index={index} />
       {component.paymentType === "cash" && (
         <div style={{ display: "flex" }}>
           <input
@@ -89,21 +90,21 @@ const CheckController = ({ title, index }) => {
               style={{ padding: "10px 45px", fontSize: "20px" }}
             />
           )}
-          {uploadStatus === "succeeded" && component.downloadCheck && (
+          {uploadCheckStatus === "succeeded" && component.downloadCheck && (
             <div className={classes.requestBlock}>
               <img src={success} />
               <p>{component.nameCheck}</p>
             </div>
           )}
-          {/* {uploadStatus === "loading" && (
+          {uploadCheckStatus === "loading" && (
             <div className={classes.requestBlock}>
               <TailSpin color="#148F2B" height={55} width={55} />
             </div>
-          )} */}
-          {uploadStatus === "failed" && (
+          )}
+          {uploadCheckStatus === "failed" && (
             <div className={classes.requestBlock}>
               <img src={errorImg} />
-              <p>{uploadError.message || uploadError}</p>
+              <p>{uploadCheckError.message || uploadCheckError}</p>
             </div>
           )}
         </div>
@@ -127,17 +128,23 @@ const CheckController = ({ title, index }) => {
               freeze={!component.downloadStatement}
             />
           )}
-          {uploadStatus === "succeeded" && component.downloadCheck && (
+          {uploadCheckStatus === "succeeded" && component.downloadCheck && (
             <div className={classes.requestBlock}>
               <img src={success} />
               <p>{component.nameCheck}</p>
             </div>
           )}
-          {/* {uploadStatus === "loading" && !check[index].download && (
+          {uploadCheckStatus === "loading" && (
             <div className={classes.requestBlock}>
               <TailSpin color="#148F2B" height={55} width={55} />
             </div>
-          )} */}
+          )}
+          {uploadCheckStatus === "failed" && (
+            <div className={classes.requestBlock}>
+              <img src={errorImg} />
+              <p>{uploadCheckError.message || uploadCheckError}</p>
+            </div>
+          )}
           <input
             type="file"
             onChange={handleFileChange}
@@ -157,15 +164,21 @@ const CheckController = ({ title, index }) => {
               <p>{component.nameStatement}</p>
             </div>
           )}
-          {/* {uploadStatus === "loading" && (
-              <div className={classes.requestBlock}>
-                <TailSpin color="#148F2B" height={55} width={55} />
-              </div>
-            )} */}
+          {uploadStatus === "loading" && (
+            <div className={classes.requestBlock}>
+              <TailSpin color="#148F2B" height={55} width={55} />
+            </div>
+          )}
+          {uploadStatus === "failed" && (
+            <div className={classes.requestBlock}>
+              <img src={errorImg} />
+              <p>{uploadError.message || uploadError}</p>
+            </div>
+          )}
         </div>
       )}
     </div>
   );
-};
+});
 
 export default CheckController;

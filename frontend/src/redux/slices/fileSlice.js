@@ -19,7 +19,10 @@ export const uploadFile = createAsyncThunk(
 
       return response.data;
     } catch (error) {
-      console.log("Error to response: " + error.response.data);
+      console.log("Error to response: " + JSON.stringify(error));
+      if (error.status === 500) {
+        return rejectWithValue("Внутренняя ошибка сервера");
+      }
       return error.response
         ? rejectWithValue(error.response.data)
         : rejectWithValue("Отсутствует соединение с сервером");
@@ -61,6 +64,8 @@ const fileSlice = createSlice({
     uploadError: null,
     downloadError: null,
     downloadData: null,
+    uploadCheckStatus: "idle",
+    uploadCheckError: null,
   },
   reducers: {
     initUploadFile: (state, action) => {
@@ -69,16 +74,32 @@ const fileSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addCase(uploadFile.pending, (state) => {
-        state.uploadStatus = "loading";
-        state.uploadError = null;
+      .addCase(uploadFile.pending, (state, action) => {
+        console.log("Name: " + action.meta.arg.name);
+        if (action.meta.arg.name.includes("cheque")) {
+          state.uploadCheckStatus = "loading";
+          state.uploadCheckError = null;
+        } else {
+          state.uploadStatus = "loading";
+          state.uploadError = null;
+        }
       })
-      .addCase(uploadFile.fulfilled, (state) => {
-        state.uploadStatus = "succeeded";
+      .addCase(uploadFile.fulfilled, (state, action) => {
+        if (action.meta.arg.name.includes("cheque")) {
+          state.uploadCheckStatus = "succeeded";
+        } else {
+          state.uploadStatus = "succeeded";
+        }
       })
       .addCase(uploadFile.rejected, (state, action) => {
-        state.uploadStatus = "failed";
-        state.uploadError = action.payload;
+        console.log("Failed: " + JSON.stringify(action.payload));
+        if (action.meta.arg.name.includes("cheque")) {
+          state.uploadCheckStatus = "failed";
+          state.uploadCheckError = action.payload;
+        } else {
+          state.uploadStatus = "failed";
+          state.uploadError = action.payload;
+        }
       })
       .addCase(downloadFile.pending, (state) => {
         state.downloadStatus = "loading";

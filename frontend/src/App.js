@@ -9,6 +9,7 @@ import { useDispatch, useSelector } from "react-redux";
 import DownloadPage from "./components/DownloadPage/DownloadPage";
 import { useEffect } from "react";
 import { loadRoutesFromLocalStorage } from "./redux/slices/routesSlice";
+import NotFoundPage from "./components/NotFoundPage/NotFoundPage";
 
 function App() {
   const dispatch = useDispatch();
@@ -36,6 +37,7 @@ function App() {
           })}
         </Route>
         <Route path="/document" element={<DownloadPage />} />
+        <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </div>
   );

@@ -34,15 +34,27 @@ const componentsCheckSlice = createSlice({
   },
   reducers: {
     addComponent: (state) => {
-      state.components.push({
-        id: state.components.length,
-        freeze: false,
-        nameCheck: "",
-        nameStatement: "",
-        downloadCheck: false,
-        downloadStatement: false,
-        paymentType: "",
-      });
+      // state.components.push({
+      //   id: state.components.length,
+      //   freeze: false,
+      //   nameCheck: "",
+      //   nameStatement: "",
+      //   downloadCheck: false,
+      //   downloadStatement: false,
+      //   paymentType: "",
+      // });
+      state.components = [
+        ...state.components,
+        {
+          id: state.components.length,
+          freeze: false,
+          nameCheck: "",
+          nameStatement: "",
+          downloadCheck: false,
+          downloadStatement: false,
+          paymentType: "",
+        },
+      ];
     },
     findComponent: (state, action) => {
       const i = state.components.findIndex(

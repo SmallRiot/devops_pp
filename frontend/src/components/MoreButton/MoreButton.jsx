@@ -14,12 +14,14 @@ const MoreButton = ({ style, onClick, index, show }) => {
   const selected = useSelector((state) => state.radio.selectedOption);
   const check = useSelector((state) => state.name.check);
   const statement = useSelector((state) => state.name.statement);
-  const { uploadStatus, uploadError } = useSelector((state) => state.file);
+  const { uploadCheckStatus, uploadStatus, uploadError } = useSelector(
+    (state) => state.file
+  );
 
   if (
     component.paymentType === "cash" &&
     component.downloadCheck &&
-    uploadStatus === "succeeded"
+    (uploadCheckStatus === "succeeded" || uploadCheckStatus == "failed")
   ) {
     show = true;
   }
@@ -27,8 +29,8 @@ const MoreButton = ({ style, onClick, index, show }) => {
   if (
     component.paymentType === "nonCash" &&
     component.downloadCheck &&
-    component.downloadStatement &&
-    uploadStatus === "succeeded"
+    component.downloadStatement
+    // &&    uploadStatus === "succeeded"
   ) {
     show = true;
   }

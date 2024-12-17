@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import React, { useEffect } from "react";
 import {
   findComponent,
   updatePaymentType,
@@ -6,22 +6,22 @@ import {
 import classes from "./RadioButtons.module.css";
 import { useSelector, useDispatch } from "react-redux";
 
-const RadioButtons = ({ index }) => {
+const RadioButtons = React.memo(({ component, index }) => {
   const dispatch = useDispatch();
-  const component = useSelector((state) => state.components.foundComponent);
+  // const component = useSelector((state) => state.components.foundComponent);
 
-  useEffect(() => {
-    dispatch(findComponent(index));
-  }, [dispatch, index]);
+  // useEffect(() => {
+  //   dispatch(findComponent(index));
+  // }, [dispatch, index]);
   // const selected = useSelector((state) => state.radio.selectedOption);
   // const freezes = useSelector((state) => state.radio.freeze);
-  console.log(
-    "Selected: " +
-      "with id " +
-      index +
-      "  " +
-      JSON.stringify(component, null, 2)
-  );
+  // console.log(
+  //   "Selected: " +
+  //     "with id " +
+  //     index +
+  //     "  " +
+  //     JSON.stringify(component, null, 2)
+  // );
   return (
     <div className={classes.block}>
       <div className={classes.radioBtn}>
@@ -70,6 +70,6 @@ const RadioButtons = ({ index }) => {
       </div>
     </div>
   );
-};
+});
 
 export default RadioButtons;
