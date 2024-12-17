@@ -190,6 +190,34 @@ def get_statement_info(access_token, img_id):
   else:
     return response.status_code
 
+
+def get_marriage_info(access_token, img_id):
+    url = "https://gigachat.devices.sberbank.ru/api/v1/chat/completions"
+    payload = json.dumps({
+        "model": "GigaChat-Max",
+        "messages": [
+            {
+                "role": "user",
+                "content": "Прочитай данный текст свидетельства о браке и выведи из него всю важную информацию в виде списка, а именно: Название, ФИО мужа с использованием присвоенной фамилии, ФИО жены с присвоенной фамилией",
+                "attachments": [
+                    img_id
+                ]
+            }
+        ],
+        "stream": False,
+        "update_interval": 0
+    })
+    headers = {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + access_token
+    }
+    response = requests.request("POST", url, headers=headers, data=payload, verify=False)
+    delete_img(access_token, img_id)
+    if response.status_code == 200:
+        return response.json()['choices'][0]['message']['content']
+    else:
+        return response.status_code
+
 def get_reference_six_info(access_token, img_id):
   
   url = "https://gigachat.devices.sberbank.ru/api/v1/chat/completions"
@@ -341,9 +369,20 @@ def statement_response(user_content, auth_token):
 
   messages = [
       SystemMessage(
-          content="Ты валидатор данных, который получает информацию и выдает ответ в json-формате, без указания, что это json по полям на выходе. В поле Название всегда пиши Заявление. Даты переводи в формат dd/mm/yyyy Выведи только следующие поля строго с такими же названиями: Название, ФИО заявителя, ФИО ребенка, ДР ребенка, Дата подписи, Наличие подписи."
-    )
-  ] 
+          content="Ты валидатор данных, который получает информацию и выдает ответ строго в формате JSON. Поля JSON всегда одинаковые и строго соответствуют следующим названиям:\
+          - Название\
+          - ФИО заявителя\
+          - ФИО ребенка\
+          - ДР ребенка\
+          - Дата подписи\
+          - Наличие подписи\
+          \
+          Поле 'Название' всегда имеет значение 'Заявление'.\
+          Все даты переводятся в формат dd/mm/yyyy.\
+          Обрати внимание: название полей в JSON не меняется независимо от входных данных.\
+          Выводи только перечисленные поля в указанном порядке."
+      )
+  ]
 
   messages.append(HumanMessage(content=user_content))
   res = model.invoke(messages)
@@ -405,9 +444,23 @@ def reference_response(user_content, auth_token):
 
   messages = [
       SystemMessage(
-          content="Ты валидатор данных, который получает информацию и образует json-файл по полям на выходе. Даты переводи в формат dd/mm/yyyy. В названии всегда указывай - Выписка. В сумме указывай только число в формате float. Выведи только следующие поля: Название, Дата, Итоговая сумма, ФИО плательщика."
-    )
-  ] 
+          content='''Ты валидатор данных. Твоя задача — принимать входную информацию, валидировать её и возвращать JSON-объект с преобразованными данными. Требования:\
+          Поле 'Название':
+          Всегда должно быть строкой "Выписка", независимо от входных данных.
+          Поле "Дата":
+          Преобразуй любую входную дату в формат dd/mm/yyyy.
+          Поле "Итоговая сумма":
+          Извлеки только числовую часть суммы и преобразуй её в float.
+          Поле "ФИО плательщика":
+          Должно быть строкой.
+          Вывод:
+          Верни только эти четыре поля в JSON-объекте:
+          Название
+          Дата
+          Итоговая сумма
+          ФИО плательщика'''
+      )
+  ]
 
   messages.append(HumanMessage(content=user_content))
   res = model.invoke(messages)

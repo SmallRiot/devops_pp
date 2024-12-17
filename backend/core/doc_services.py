@@ -1,5 +1,6 @@
 import json
 import os
+from difflib import SequenceMatcher
 
 from django.contrib.messages import SUCCESS
 from django.core.exceptions import ValidationError
@@ -76,6 +77,23 @@ def check_is_file_exist_and_delete(_file_name,_session_id):
     if doc:
         delete_garbage_file(doc.id)
 
+
+def custom_equals(str1, str2, threshold=0.8):
+    """
+    Сравнивает две строки, возвращает True, если они совпадают хотя бы на threshold (по умолчанию 60%).
+
+    Args:
+    str1 (str): Первая строка.
+    str2 (str): Вторая строка.
+    threshold (float): Порог сходства (0.6 = 60%).
+
+    Returns:
+    bool: True, если строки похожи больше, чем threshold. False в остальных случаях.
+    """
+    similarity = SequenceMatcher(None, str1, str2).ratio()
+    return similarity >= threshold
+
+
 class DataInspector:
     def __init__(self, json_data):
         self.json_data = json_data
@@ -92,9 +110,9 @@ class DataInspector:
                 father_name = data.get('ФИО мужа')
                 mother_name = data.get('ФИО жены')
 
-            if(file_name != "СВИДЕТЕЛЬСТВО О ЗАКЛЮЧЕНИИ БРАКА" and file_name != "СВИДЕТЕЛЬСТВО О БРАКЕ"):
-                return JsonResponse({'message': "Загружен неверный файл"}, status=400)
 
+            if not ("брак" in file_name.lower() and "свидетельств" in file_name.lower()):
+                return JsonResponse({'message': "Загружен неверный файл"}, status=400)
             try:
                 medical_insurance = MedicalInsurance.objects.get(session_id=_session_id)
             except Exception:
@@ -103,9 +121,9 @@ class DataInspector:
             father = medical_insurance.father
             mother =medical_insurance.mother
 
-            if(father_name != father.name):
+            if not (custom_equals(father_name,father.name)):
                 return JsonResponse({'message': "Неверно указаны ФИО отца"}, status=400)
-            elif(mother_name != mother.name):
+            elif not (custom_equals(mother_name,mother.name)):
                 return JsonResponse({'message': "Неверно указаны ФИО матери"}, status=400)
 
             return JsonResponse({'message': 'SUCCESS'}, status=200)
@@ -130,8 +148,8 @@ class DataInspector:
                 file_name = data.get('Название')
                 applicant_name = data.get('ФИО заявителя')
                 kid_name = data.get('ФИО ребенка')
-                signature = data.get('Наличие подписи')
-                _signature_date = data.get('Дата подписи')
+                # signature = data.get('Наличие подписи')
+                # _signature_date = data.get('Дата подписи')
                 _kid_birth = data.get('ДР ребенка')
 
 
@@ -139,8 +157,8 @@ class DataInspector:
             if not ("заявление" in file_name.lower()):
                 return JsonResponse({'message': "Загружен неверный файл"}, status=400)
 
-            signature_date = parse_date(_signature_date, 'Дата подписи')
-            if isinstance(signature_date, JsonResponse): return signature_date
+            # signature_date = parse_date(_signature_date, 'Дата подписи')
+            # if isinstance(signature_date, JsonResponse): return signature_date
             kid_birth = parse_date(_kid_birth, 'ДР ребенка')
             if isinstance(kid_birth, JsonResponse): return kid_birth
 
@@ -149,11 +167,11 @@ class DataInspector:
             except Exception:
                 return JsonResponse({'message': "Документ 'Свидетельство о рождении' не найден. Пожалуйста, следуйте инструкции"},status=400)
 
-            if(not signature):
-                return JsonResponse({'message': 'Подпись не распознана'}, status=400)
-            if (signature_date.year != datetime.now().year):
-                return JsonResponse({'message': f"Дата подписи не от этого года"}, status=400)
-            elif(kid_name != medical_insurance.child_name):
+            # if(not signature):
+            #     return JsonResponse({'message': 'Подпись не распознана'}, status=400)
+            # if (signature_date.year != datetime.now().year):
+            #     return JsonResponse({'message': f"Дата подписи не от этого года"}, status=400)
+            if(kid_name != medical_insurance.child_name):
                 return JsonResponse({'message': 'Неверно указаны ФИО ребенка'}, status=400)
             elif (kid_birth != medical_insurance.child_birth_date):
                 return JsonResponse({'message': 'Неверно указана дата рождения ребенка'}, status=400)
@@ -257,7 +275,7 @@ class DataInspector:
             if data:
                 file_name = data.get('Название')
                 payer_name = data.get('ФИО плательщика')
-                amount = data.get('Сумма')
+                amount = data.get('Итоговая сумма')
                 date = data.get('Дата оплаты')
                 place = data.get('Место оплаты')
 
@@ -273,7 +291,7 @@ class DataInspector:
             father = medical_insurance.father
             mother =medical_insurance.mother
 
-            if(payer_name != father.name and payer_name != mother.name):
+            if(custom_equals(payer_name,father.name) and custom_equals(payer_name,mother.name)):
                 return JsonResponse({'message': f"Указан другой плательщик. Ожидается: {father.name} или {mother.name}"}, status=400)
 
             if not amount:
@@ -306,8 +324,8 @@ class DataInspector:
                 _payment_date = data.get('Дата оплаты')
                 amount = data.get('Сумма')
                 medical_institutions = data.get('Место оплаты')
-                is_signature = data.get('Подпись')
-                is_print = data.get('Печать')
+                # is_signature = data.get('Подпись')
+                # is_print = data.get('Печать')
 
             if not ("чек" in file_name.lower()):
                 return JsonResponse({'message': "Загружен неверный файл"}, status=400)
@@ -325,7 +343,7 @@ class DataInspector:
 
             if(payment_method == f"Безналично" and medical_insurance.is_extract_cheque_uploaded == False):
                 return JsonResponse({'message': "При безналичном расчете требуется банковская выписка"}, status=400)
-            if (payer_name != father.name and payer_name != mother.name):
+            if (custom_equals(payer_name,father.name) and custom_equals(payer_name,mother.name)):
                 return JsonResponse({'message': f"Указан другой плательщик. Ожидается: {father.name} или {mother.name}"}, status=400)
             if (payment_date.year != datetime.now().year):
                 return JsonResponse({'message': f"Год оплаты не равен текущему году"}, status=400)
@@ -335,12 +353,12 @@ class DataInspector:
                     return JsonResponse({'message': f"Чек не входит в период действия страховой справки"}, status=400)
             if (amount != medical_insurance.cheque_amount):
                 return JsonResponse({'message': f"Сумма в чеке и сумма в выписке не совпадают"}, status=400)
-            if (medical_institutions != medical_insurance.medical_organization_data):
+            if (custom_equals(medical_institutions,medical_insurance.medical_organization_data,0.1)):
                 return JsonResponse({'message': f"Данные мед. организации не совпадают. Ожидается: {medical_insurance.medical_organization_data}"}, status=400)
-            if not is_signature:
-                return JsonResponse({'message': f"Отсутствует подпись"},status=400)
-            if not is_print:
-                return JsonResponse({'message': f"Отсутствует печать"},status=400)
+            # if not is_signature:
+            #     return JsonResponse({'message': f"Отсутствует подпись"},status=400)
+            # if not is_print:
+            #     return JsonResponse({'message': f"Отсутствует печать"},status=400)
 
             medical_insurance.cheque_amount = 0
             medical_insurance.is_extract_cheque_uploaded = False
@@ -394,7 +412,7 @@ class DataInspector:
             father = medical_insurance.father
             mother = medical_insurance.mother
 
-            if (payer_name != father.name and payer_name != mother.name):
+            if (custom_equals(payer_name,father.name) and custom_equals(payer_name,mother.name)):
                 return JsonResponse({'message': f"Указан другой плательщик. Ожидается: {father.name} или {mother.name}"}, status=400)
             elif(kid_name != medical_insurance.child_name):
                 return JsonResponse({'message': 'Неверно указаны ФИО ребенка'}, status=400)
@@ -452,7 +470,7 @@ class DataInspector:
                 return JsonResponse({'message': 'Неверно указаны ФИО ребенка'}, status=400)
             if (kid_birth != medical_insurance.child_birth_date):
                 return JsonResponse({'message': 'Неверно указана дата рождения ребенка'}, status=400)
-            if (validity_date2 < datetime.now()):
+            if (validity_date2 < datetime.now().date()):
                 return JsonResponse(
                     {'message': f"Срок полиса истек"}, status=400)
 
@@ -504,7 +522,7 @@ class DataInspector:
             father = medical_insurance.father
             mother =medical_insurance.mother
 
-            if (payer_name != father.name or payer_name != mother.name):
+            if (custom_equals(payer_name,father.name) and custom_equals(payer_name,mother.name)):
                 return JsonResponse(
                     {'message': f"Указан другой плательщик. Ожидается: {father.name} или {mother.name}"}, status=400)
             if (kid_name != medical_insurance.child_name):
