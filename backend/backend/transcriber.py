@@ -6,95 +6,104 @@ from PIL import Image
 from langchain_core.messages import HumanMessage, SystemMessage
 from langchain_gigachat.chat_models import GigaChat
 
-rquid = str(uuid.uuid4()) # Нужен для работы всех функций
-auth_token = '' # Кину отдельно, чтобы его в .env добавить 
+rquid = str(uuid.uuid4())  # Нужен для работы всех функций
+auth_token = ''  # Кину отдельно, чтобы его в .env добавить
 # img_path = input() # Здесь должна быть функция получения изображения с фронта
 
 """ Токен должен быть один для всех и обновляться раз в 30 минут """
+
+
 def get_access_token(rquid, auth_token):
-  url = "https://ngw.devices.sberbank.ru:9443/api/v2/oauth"
+    url = "https://ngw.devices.sberbank.ru:9443/api/v2/oauth"
 
-  payload='scope=GIGACHAT_API_PERS'
+    payload = 'scope=GIGACHAT_API_PERS'
 
-  headers = {
-    'Content-Type': 'application/x-www-form-urlencoded',
-    'Accept': 'application/json',
-    'RqUID': rquid,
-    'Authorization': 'Basic ' + auth_token
-  }
+    headers = {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Accept': 'application/json',
+        'RqUID': rquid,
+        'Authorization': 'Basic ' + auth_token
+    }
 
-  response = requests.request("POST", url, headers=headers, data=payload, verify=False)
+    response = requests.request("POST", url, headers=headers, data=payload, verify=False)
 
-  if response.status_code == 200:
-    return response.json()['access_token']
-  else:
-    return response.status_code
+    if response.status_code == 200:
+        return response.json()['access_token']
+    else:
+        return response.status_code
+
 
 # Получение токена для работы остальных функций
 access_token = get_access_token(rquid, auth_token)
 
 """ Это функция загрузки изобржения в API. 
 Когда изображение приходит с фронта, сначала нужно добавить его в API, а потом получить id """
+
+
 def load_img(access_token, img_path):
-  url = "https://gigachat.devices.sberbank.ru/api/v1/files"
+    url = "https://gigachat.devices.sberbank.ru/api/v1/files"
 
-  payload = {'purpose': 'general'}
+    payload = {'purpose': 'general'}
 
-  files=[
-  ('file',('file',open(str(img_path),'rb'),'image/png'))
-  ]
+    files = [
+        ('file', ('file', open(str(img_path), 'rb'), 'image/png'))
+    ]
 
-  headers = {
-  'Authorization': 'Bearer ' + access_token
-  }
+    headers = {
+        'Authorization': 'Bearer ' + access_token
+    }
 
-  response = requests.request("POST", url, headers=headers, data=payload, files=files, verify=False)
+    response = requests.request("POST", url, headers=headers, data=payload, files=files, verify=False)
 
-  if response.status_code == 200:
-    return response.json()['id']
-  else:
-    return response.status_code
+    if response.status_code == 200:
+        return response.json()['id']
+    else:
+        return response.status_code
+
 
 def load_pdf(access_token, img_path):
-  url = "https://gigachat.devices.sberbank.ru/api/v1/files"
+    url = "https://gigachat.devices.sberbank.ru/api/v1/files"
 
-  payload = {'purpose': 'general'}
+    payload = {'purpose': 'general'}
 
-  files=[
-  ('file',('file',open(str(img_path),'rb'),'application/pdf'))
-  ]
+    files = [
+        ('file', ('file', open(str(img_path), 'rb'), 'application/pdf'))
+    ]
 
-  headers = {
-  'Authorization': 'Bearer ' + access_token
-  }
+    headers = {
+        'Authorization': 'Bearer ' + access_token
+    }
 
-  response = requests.request("POST", url, headers=headers, data=payload, files=files, verify=False)
+    response = requests.request("POST", url, headers=headers, data=payload, files=files, verify=False)
 
-  if response.status_code == 200:
-    return response.json()['id']
-  else:
-    return response
+    if response.status_code == 200:
+        return response.json()['id']
+    else:
+        return response
+
 
 """ Для того, чтобы не хранить персональные данные и не перегружать API, все изоюбражения удаляются после обработки """
+
+
 def delete_img(access_token, img_id):
-  url = "https://gigachat.devices.sberbank.ru/api/v1/files/:" + img_id + "/delete"
+    url = "https://gigachat.devices.sberbank.ru/api/v1/files/:" + img_id + "/delete"
 
-  payload={}
+    payload = {}
 
-  headers = {
-  'Accept': 'application/json',
-  'Authorization': 'Bearer ' + access_token
-  }
+    headers = {
+        'Accept': 'application/json',
+        'Authorization': 'Bearer ' + access_token
+    }
 
-  response = requests.request("POST", url, headers=headers, data=payload, verify=False)
+    response = requests.request("POST", url, headers=headers, data=payload, verify=False)
 
-  if response.status_code == 200:
-    return response.json()
-  else:
-    return response.status_code
+    if response.status_code == 200:
+        return response.json()
+    else:
+        return response.status_code
+
 
 def image_to_pdf(image_path, output_pdf_path):
-
     pdf = FPDF()
 
     with Image.open(image_path) as img:
@@ -115,13 +124,11 @@ def image_to_pdf(image_path, output_pdf_path):
         img_height = pdf_height
 
     pdf.image(image_path, x=0, y=0, w=img_width, h=img_height)
-      
+
     pdf.output(output_pdf_path)
 
 
-
 def images_to_pdf(image_paths, output_pdf_path):
-
     pdf = FPDF()
 
     for image_path in image_paths:
@@ -146,7 +153,10 @@ def images_to_pdf(image_paths, output_pdf_path):
 
     pdf.output(output_pdf_path)
 
+
 """Очищение вывода в запросах"""
+
+
 def extract_content(s):
     start_index = s.find('{')
     end_index = s.rfind('}')
@@ -156,39 +166,40 @@ def extract_content(s):
     else:
         return ""
 
+
 """PDF методы"""
 
+
 def get_statement_info(access_token, img_id):
-  
-  url = "https://gigachat.devices.sberbank.ru/api/v1/chat/completions"
+    url = "https://gigachat.devices.sberbank.ru/api/v1/chat/completions"
 
-  payload = json.dumps({
-    "model": "GigaChat-Max",
-    "messages": [
-      {
-        "role": "user",
-        "content": "Прочитай данный текст заявления и выведи из него всю важную информацию в виде списка, а именно: Название, ФИО заявителя, ФИО ребенка, ДР ребенка, Дата подписи, Наличие подписи.",
-        "attachments": [
-          img_id
-        ]
-      }
-    ],
-    "stream": False,
-    "update_interval": 0
-  })
+    payload = json.dumps({
+        "model": "GigaChat-Max",
+        "messages": [
+            {
+                "role": "user",
+                "content": "Прочитай данный текст заявления и выведи из него всю важную информацию в виде списка, а именно: Название, ФИО заявителя, ФИО ребенка, ДР ребенка, Дата подписи, Наличие подписи.",
+                "attachments": [
+                    img_id
+                ]
+            }
+        ],
+        "stream": False,
+        "update_interval": 0
+    })
 
-  headers = {
-    'Content-Type': 'application/json',
-    'Authorization': 'Bearer ' + access_token
-  }
+    headers = {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + access_token
+    }
 
-  response = requests.request("POST", url, headers=headers, data=payload, verify=False)
-  delete_img(access_token, img_id)
+    response = requests.request("POST", url, headers=headers, data=payload, verify=False)
+    delete_img(access_token, img_id)
 
-  if response.status_code == 200:
-    return response.json()['choices'][0]['message']['content']
-  else:
-    return response.status_code
+    if response.status_code == 200:
+        return response.json()['choices'][0]['message']['content']
+    else:
+        return response.status_code
 
 
 def get_marriage_info(access_token, img_id):
@@ -218,158 +229,163 @@ def get_marriage_info(access_token, img_id):
     else:
         return response.status_code
 
+
 def get_reference_six_info(access_token, img_id):
-  
-  url = "https://gigachat.devices.sberbank.ru/api/v1/chat/completions"
+    url = "https://gigachat.devices.sberbank.ru/api/v1/chat/completions"
 
-  payload = json.dumps({
-    "model": "GigaChat-Max",
-    "messages": [
-      {
-        "role": "user",
-        "content": "Прочитай данный текст справки и выведи из него всю важную информацию в виде списка, а именно: ФИО плательщика, ФИО ребенка, ДР ребенка, Дата начала страхования, Дата окончания страхования, Номер полиса по которому произведена оплата.",
-        "attachments": [
-          img_id
-        ]
-      }
-    ],
-    "stream": False,
-    "update_interval": 0
-  })
+    payload = json.dumps({
+        "model": "GigaChat-Max",
+        "messages": [
+            {
+                "role": "user",
+                "content": "Прочитай данный текст справки и выведи из него всю важную информацию в виде списка, а именно: ФИО плательщика, ФИО ребенка, ДР ребенка, Дата начала страхования, Дата окончания страхования, Номер полиса по которому произведена оплата.",
+                "attachments": [
+                    img_id
+                ]
+            }
+        ],
+        "stream": False,
+        "update_interval": 0
+    })
 
-  headers = {
-    'Content-Type': 'application/json',
-    'Authorization': 'Bearer ' + access_token
-  }
+    headers = {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + access_token
+    }
 
-  response = requests.request("POST", url, headers=headers, data=payload, verify=False)
-  delete_img(access_token, img_id)
+    response = requests.request("POST", url, headers=headers, data=payload, verify=False)
+    delete_img(access_token, img_id)
 
-  if response.status_code == 200:
-    return response.json()['choices'][0]['message']['content']
-  else:
-    return response.status_code
+    if response.status_code == 200:
+        return response.json()['choices'][0]['message']['content']
+    else:
+        return response.status_code
+
 
 def get_reciept_info(access_token, img_id):
-  
-  url = "https://gigachat.devices.sberbank.ru/api/v1/chat/completions"
+    url = "https://gigachat.devices.sberbank.ru/api/v1/chat/completions"
 
-  payload = json.dumps({
-    "model": "GigaChat-Max",
-    "messages": [
-      {
-        "role": "user",
-        "content": "Ты валидатор данных, который получает информацию и образует json-файл по полям на выходе. Даты переводи в формат dd/mm/yyyy. В НАЗВАНИИ ВСЕГДА УКАЗЫВАЙ ЧЕК - Чек. В сумме укажи только число, указанное в итоговой сумме к оплате в формате float. В поле Место укажи название компании, в которой произведена оплата. ВЫВЕДИ ТОЛЬКО СЛЕДУЮЩИЕ ПОЛЯ: Название, Способ оплаты, ФИО плтельщика, Дата оплаты, Сумма, Место оплаты, Подпись, Печать.",
-        "attachments": [
-          img_id
-        ]
-      }
-    ],
-    "stream": False,
-    "update_interval": 0
-  })
+    payload = json.dumps({
+        "model": "GigaChat-Max",
+        "messages": [
+            {
+                "role": "user",
+                "content": "Ты валидатор данных, который получает информацию и образует json-файл по полям на выходе. Даты переводи в формат dd/mm/yyyy. В НАЗВАНИИ АБСОЛЮТНО ВСЕГДА ВЫВОДИ - Чек. В сумме укажи только число, указанное в итоговой сумме к оплате в формате float, согласно образцу (20000.00), но внутри строки. В поле Место укажи название компании, в которой произведена оплата. Если в способе оплаты встречаются слова VISA или Mastercard, в поле Способ Оплаты пиши Безналичный. Если в способе оплаты написано Наличными, пиши Наличными. ВЫВЕДИ ТОЛЬКО СЛЕДУЮЩИЕ ПОЛЯ: Название, Способ оплаты, ФИО плательщика, Дата оплаты, Cумма, Место оплаты.",
+                "attachments": [
+                    img_id
+                ]
+            }
+        ],
+        "stream": False,
+        "update_interval": 0
+    })
 
-  headers = {
-    'Content-Type': 'application/json',
-    'Authorization': 'Bearer ' + access_token
-  }
+    headers = {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + access_token
+    }
 
-  response = requests.request("POST", url, headers=headers, data=payload, verify=False)
-  delete_img(access_token, img_id)
+    response = requests.request("POST", url, headers=headers, data=payload, verify=False)
+    delete_img(access_token, img_id)
 
-  if response.status_code == 200:
-    return extract_content(response.json()['choices'][0]['message']['content'])
-  else:
-    return response.status_code
- 
+    if response.status_code == 200:
+        return extract_content(response.json()['choices'][0]['message']['content'])
+    else:
+        return response.status_code
+
 
 def get_info(access_token, img_id):
-  
-  url = "https://gigachat.devices.sberbank.ru/api/v1/chat/completions"
+    url = "https://gigachat.devices.sberbank.ru/api/v1/chat/completions"
 
-  payload = json.dumps({
-    "model": "GigaChat-Max",
-    "messages": [
-      {
-        "role": "user",
-        "content": "Получи информацию из этого файла и выведи её в виде списка",
-        "attachments": [
-          img_id
-        ]
-      }
-    ],
-    "stream": False,
-    "update_interval": 0
-  })
+    payload = json.dumps({
+        "model": "GigaChat-Max",
+        "messages": [
+            {
+                "role": "user",
+                "content": "Получи информацию из этого файла и выведи её в виде списка",
+                "attachments": [
+                    img_id
+                ]
+            }
+        ],
+        "stream": False,
+        "update_interval": 0
+    })
 
-  headers = {
-    'Content-Type': 'application/json',
-    'Authorization': 'Bearer ' + access_token
-  }
+    headers = {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + access_token
+    }
 
-  response = requests.request("POST", url, headers=headers, data=payload, verify=False)
-  delete_img(access_token, img_id)
+    response = requests.request("POST", url, headers=headers, data=payload, verify=False)
+    delete_img(access_token, img_id)
 
-  if response.status_code == 200:
-    return response.json()['choices'][0]['message']['content']
-  else:
-    return response.status_code
+    if response.status_code == 200:
+        return response.json()['choices'][0]['message']['content']
+    else:
+        return response.status_code
+
 
 """Свидетельство о рождении"""
+
+
 def birth_response(user_content, auth_token):
-
-  model = GigaChat(
-      credentials=auth_token,
-      scope="GIGACHAT_API_PERS",
-      model="GigaChat",
-      verify_ssl_certs=False,
-  )
-
-  messages = [
-      SystemMessage(
-          content="Ты валидатор данных, который получает информацию и образует json-файл по полям на выходе. Даты переводи в формат dd/mm/yyyy В поле Название всегда указывай СВИДЕТЕЛЬСТВО О РОЖДЕНИИ. Выведи только следующие поля строго с такими же названиями: Название, ФИО ребенка, ФИО отца, ФИО матери, ДР ребенка"
+    model = GigaChat(
+        credentials=auth_token,
+        scope="GIGACHAT_API_PERS",
+        model="GigaChat",
+        verify_ssl_certs=False,
     )
-  ] 
 
-  messages.append(HumanMessage(content=user_content))
-  res = model.invoke(messages)
-  messages.append(res)
-  return json.loads(extract_content(res.content))
+    messages = [
+        SystemMessage(
+            content="Ты валидатор данных, который получает информацию и образует json-файл по полям на выходе. Даты переводи в формат dd/mm/yyyy В поле Название всегда указывай СВИДЕТЕЛЬСТВО О РОЖДЕНИИ. Выведи только следующие поля строго с такими же названиями: Название, ФИО ребенка, ФИО отца, ФИО матери, ДР ребенка"
+        )
+    ]
+
+    messages.append(HumanMessage(content=user_content))
+    res = model.invoke(messages)
+    messages.append(res)
+    return json.loads(extract_content(res.content))
+
 
 """Свидетельство о браке"""
+
+
 def marriage_response(user_content, auth_token):
-
-  model = GigaChat(
-      credentials=auth_token,
-      scope="GIGACHAT_API_PERS",
-      model="GigaChat",
-      verify_ssl_certs=False,
-  )
-
-  messages = [
-      SystemMessage(
-          content="Ты валидатор данных, который получает информацию и образует json-файл по полям на выходе. Даты переводи в формат dd/mm/yyyy В поле Название всегда указывай СВИДЕТЕЛЬСТВО О БРАКЕ. Сформируй ФИО мужа и ФИО жены, полученные после заключения брака с использованием ПРИСВОЕННЫХ ФАМИЛИЙ, И ОРИГИНАЛЬНЫХ ИМЕНИ И ОТЧЕСТВА. Выведи только следующие поля: Название, ФИО мужа, ФИО жены"
+    model = GigaChat(
+        credentials=auth_token,
+        scope="GIGACHAT_API_PERS",
+        model="GigaChat",
+        verify_ssl_certs=False,
     )
-  ] 
 
-  messages.append(HumanMessage(content=user_content))
-  res = model.invoke(messages)
-  messages.append(res)
-  return json.loads(extract_content(res.content))
+    messages = [
+        SystemMessage(
+            content="Ты валидатор данных, который получает информацию и образует json-файл по полям на выходе. Даты переводи в формат dd/mm/yyyy В поле Название всегда указывай СВИДЕТЕЛЬСТВО О БРАКЕ. Сформируй ФИО мужа и ФИО жены, полученные после заключения брака с использованием ПРИСВОЕННЫХ ФАМИЛИЙ, И ОРИГИНАЛЬНЫХ ИМЕНИ И ОТЧЕСТВА. Выведи только следующие поля: Название, ФИО мужа, ФИО жены"
+        )
+    ]
+
+    messages.append(HumanMessage(content=user_content))
+    res = model.invoke(messages)
+    messages.append(res)
+    return json.loads(extract_content(res.content))
+
 
 """Заявление"""
+
+
 def statement_response(user_content, auth_token):
+    model = GigaChat(
+        credentials=auth_token,
+        scope="GIGACHAT_API_PERS",
+        model="GigaChat",
+        verify_ssl_certs=False,
+    )
 
-  model = GigaChat(
-      credentials=auth_token,
-      scope="GIGACHAT_API_PERS",
-      model="GigaChat",
-      verify_ssl_certs=False,
-  )
-
-  messages = [
-      SystemMessage(
-          content="Ты валидатор данных, который получает информацию и выдает ответ строго в формате JSON. Поля JSON всегда одинаковые и строго соответствуют следующим названиям:\
+    messages = [
+        SystemMessage(
+            content="Ты валидатор данных, который получает информацию и выдает ответ строго в формате JSON. Поля JSON всегда одинаковые и строго соответствуют следующим названиям:\
           - Название\
           - ФИО заявителя\
           - ФИО ребенка\
@@ -381,70 +397,76 @@ def statement_response(user_content, auth_token):
           Все даты переводятся в формат dd/mm/yyyy.\
           Обрати внимание: название полей в JSON не меняется независимо от входных данных.\
           Выводи только перечисленные поля в указанном порядке."
-      )
-  ]
+        )
+    ]
 
-  messages.append(HumanMessage(content=user_content))
-  res = model.invoke(messages)
-  print(res)
-  messages.append(res)
-  return json.loads(extract_content(res.content))
+    messages.append(HumanMessage(content=user_content))
+    res = model.invoke(messages)
+    print(res)
+    messages.append(res)
+    return json.loads(extract_content(res.content))
+
 
 """Справка 6.15"""
+
+
 def reference_six_response(user_content, auth_token):
-
-  model = GigaChat(
-      credentials=auth_token,
-      scope="GIGACHAT_API_PERS",
-      model="GigaChat",
-      verify_ssl_certs=False,
-  )
-
-  messages = [
-      SystemMessage(
-          content="Ты валидатор данных, который получает информацию и выводит ответ в json-формате без указания, что это json по полям на выходе. В ответе не должно быть ничего лишнего, только json. В поле Название всегда пиши Справка от страховой компании. Даты переводи в формат dd/mm/yyyy. Для номера полиса ДМС используй номер полиса, по которому произведена оплата, он находится после указания №. Выведи только следующие поля: Название, ФИО плательщика, ФИО ребенка, ДР ребенка, Дата начала страхования, Дата окончания страхования, Номер полиса ДМС."
+    model = GigaChat(
+        credentials=auth_token,
+        scope="GIGACHAT_API_PERS",
+        model="GigaChat",
+        verify_ssl_certs=False,
     )
-  ] 
 
-  messages.append(HumanMessage(content=user_content))
-  res = model.invoke(messages)
-  messages.append(res)
-  return json.loads(extract_content(res.content))
+    messages = [
+        SystemMessage(
+            content="Ты валидатор данных, который получает информацию и выводит ответ в json-формате без указания, что это json по полям на выходе. В ответе не должно быть ничего лишнего, только json. В поле Название всегда пиши Справка от страховой компании. Даты переводи в формат dd/mm/yyyy. Для номера полиса ДМС используй номер полиса, по которому произведена оплата, он находится после указания №. Выведи только следующие поля: Название, ФИО плательщика, ФИО ребенка, ДР ребенка, Дата начала страхования, Дата окончания страхования, Номер полиса ДМС."
+        )
+    ]
+
+    messages.append(HumanMessage(content=user_content))
+    res = model.invoke(messages)
+    messages.append(res)
+    return json.loads(extract_content(res.content))
+
 
 """Справка об оплате медицинских услуг"""
+
+
 def double_page_response(user_content, auth_token):
-
-  model = GigaChat(
-      credentials=auth_token,
-      scope="GIGACHAT_API_PERS",
-      model="GigaChat",
-      verify_ssl_certs=False,
-  )
-
-  messages = [
-      SystemMessage(
-          content="Ты валидатор данных, который получает информацию и выдаёт ответ в json-формате, без указания, что это json по полям на выходе. Даты переводи в формат dd/mm/yyyy В поле Название всегда пиши - Справка об оплате медицинских услуг. Выведи только следующие поля: Название, ФИО налогоплательщика, ДР налогоплательщика, Название организации, ИНН, Паспортные данные, Сумма расходов, ФИО выдавшего справку, ФИО ребенка, ДР ребенка, Дата, Подпись."
+    model = GigaChat(
+        credentials=auth_token,
+        scope="GIGACHAT_API_PERS",
+        model="GigaChat",
+        verify_ssl_certs=False,
     )
-  ] 
 
-  messages.append(HumanMessage(content=user_content))
-  res = model.invoke(messages)
-  messages.append(res)
-  return json.loads(extract_content(res.content))
+    messages = [
+        SystemMessage(
+            content="Ты валидатор данных, который получает информацию и выдаёт ответ в json-формате, без указания, что это json по полям на выходе. Даты переводи в формат dd/mm/yyyy В поле Название всегда пиши - Справка об оплате медицинских услуг. Выведи только следующие поля: Название, ФИО налогоплательщика, ДР налогоплательщика, Название организации, ИНН, Паспортные данные, Сумма расходов, ФИО выдавшего справку, ФИО ребенка, ДР ребенка, Дата, Подпись."
+        )
+    ]
+
+    messages.append(HumanMessage(content=user_content))
+    res = model.invoke(messages)
+    messages.append(res)
+    return json.loads(extract_content(res.content))
+
 
 """Выписка по чеку"""
+
+
 def reference_response(user_content, auth_token):
+    model = GigaChat(
+        credentials=auth_token,
+        scope="GIGACHAT_API_PERS",
+        model="GigaChat",
+        verify_ssl_certs=False,
+    )
 
-  model = GigaChat(
-      credentials=auth_token,
-      scope="GIGACHAT_API_PERS",
-      model="GigaChat",
-      verify_ssl_certs=False,
-  )
-
-  messages = [
-      SystemMessage(
-          content='''Ты валидатор данных. Твоя задача — принимать входную информацию, валидировать её и возвращать JSON-объект с преобразованными данными. Требования:\
+    messages = [
+        SystemMessage(
+            content='''Ты валидатор данных. Твоя задача — принимать входную информацию, валидировать её и возвращать JSON-объект с преобразованными данными. Требования:\
           Поле 'Название':
           Всегда должно быть строкой "Выписка", независимо от входных данных.
           Поле "Дата":
@@ -459,59 +481,66 @@ def reference_response(user_content, auth_token):
           Дата
           Итоговая сумма
           ФИО плательщика'''
-      )
-  ]
+        )
+    ]
 
-  messages.append(HumanMessage(content=user_content))
-  res = model.invoke(messages)
-  messages.append(res)
-  return json.loads(extract_content(res.content))
+    messages.append(HumanMessage(content=user_content))
+    res = model.invoke(messages)
+    messages.append(res)
+    return json.loads(extract_content(res.content))
+
 
 """Чек"""
+
+
 def reciept_response(user_content, auth_token):
-
-  model = GigaChat(
-      credentials=auth_token,
-      scope="GIGACHAT_API_PERS",
-      model="GigaChat",
-      verify_ssl_certs=False,
-  )
-
-  messages = [
-      SystemMessage(
-          content="Ты валидатор данных, который получает информацию и образует json-файл по полям на выходе. Даты переводи в формат dd/mm/yyyy. В названии всегда указывай - Чек. Выведи только следующие поля: Название, Способ оплаты, ФИО плтельщика, Дата оплаты, Сумма, Место, Подпись, Печать."
+    model = GigaChat(
+        credentials=auth_token,
+        scope="GIGACHAT_API_PERS",
+        model="GigaChat",
+        verify_ssl_certs=False,
     )
-  ] 
 
-  messages.append(HumanMessage(content=user_content))
-  res = model.invoke(messages)
-  messages.append(res)
-  return json.loads(extract_content(res.content))
+    messages = [
+        SystemMessage(
+            content="Ты валидатор данных, который получает информацию и образует json-файл по полям на выходе. Даты переводи в формат dd/mm/yyyy. В названии всегда указывай - Чек. Выведи только следующие поля: Название, Способ оплаты, ФИО плтельщика, Дата оплаты, Сумма, Место, Подпись, Печать."
+        )
+    ]
+
+    messages.append(HumanMessage(content=user_content))
+    res = model.invoke(messages)
+    messages.append(res)
+    return json.loads(extract_content(res.content))
+
 
 """Полис ДМС"""
+
+
 def insurance_response(user_content, auth_token):
-
-  model = GigaChat(
-      credentials=auth_token,
-      scope="GIGACHAT_API_PERS",
-      model="GigaChat",
-      verify_ssl_certs=False,
-  )
-
-  messages = [
-      SystemMessage(
-          content="Ты валидатор данных, который получает информацию и выдаёт ответ в json формате, без указания того, что это json по полям на выходе. Даты переводи в формат dd/mm/yyyy. В названии всегда указывай - Полис ДМС. Выведи только следующие поля: Название, ФИО ребенка, ДР ребенка, Номер полиса, Начало действия страхования, Окончание действия страхования."
+    model = GigaChat(
+        credentials=auth_token,
+        scope="GIGACHAT_API_PERS",
+        model="GigaChat",
+        verify_ssl_certs=False,
     )
-  ] 
 
-  messages.append(HumanMessage(content=user_content))
-  res = model.invoke(messages)
-  messages.append(res)
-  return json.loads(extract_content(res.content))
+    messages = [
+        SystemMessage(
+            content="Ты валидатор данных, который получает информацию и выдаёт ответ в json формате, без указания того, что это json по полям на выходе. Даты переводи в формат dd/mm/yyyy. В названии всегда указывай - Полис ДМС. Выведи только следующие поля: Название, ФИО ребенка, ДР ребенка, Номер полиса, Начало действия страхования, Окончание действия страхования."
+        )
+    ]
+
+    messages.append(HumanMessage(content=user_content))
+    res = model.invoke(messages)
+    messages.append(res)
+    return json.loads(extract_content(res.content))
+
 
 """Методы для картинок"""
 
 """Свидетельство о рождении"""
+
+
 def process_birth_certificate(access_token, img_id):
     """
     Функция для обработки свидетельства о рождении:
@@ -523,7 +552,6 @@ def process_birth_certificate(access_token, img_id):
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ' + access_token
     }
-
 
     prompt = """
     Прочитай предоставленный текст из свидетельства о рождении и преобразуй его в формат JSON с полями:
@@ -544,7 +572,7 @@ def process_birth_certificate(access_token, img_id):
 
     В ответ дай только JSON который я запрашиваю
     """
-    
+
     # Шаг 1: Извлечение текста с изображения
     extract_text_payload = json.dumps({
         "model": "GigaChat-Max",
@@ -597,9 +625,13 @@ def process_birth_certificate(access_token, img_id):
         except Exception as e:
             return {"error": f"Ошибка обработки JSON: {str(e)}", "response": process_response.json()}
     else:
-        return {"error": f"Ошибка запроса на преобразование: {process_response.status_code}", "details": process_response.text}
+        return {"error": f"Ошибка запроса на преобразование: {process_response.status_code}",
+                "details": process_response.text}
+
 
 """Свидетельство о браке"""
+
+
 def process_marriage_certificate(access_token, img_id):
     """
     Функция для обработки свидетельства о браке:
@@ -611,7 +643,6 @@ def process_marriage_certificate(access_token, img_id):
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ' + access_token
     }
-
 
     prompt = """
     Прочитай предоставленный текст из свидетельства о браке и преобразуй его в формат JSON с полями:
@@ -628,7 +659,7 @@ def process_marriage_certificate(access_token, img_id):
 
     В ответ дай только JSON который я запрашиваю
     """
-    
+
     # Шаг 1: Извлечение текста с изображения
     extract_text_payload = json.dumps({
         "model": "GigaChat-Max",
@@ -681,9 +712,13 @@ def process_marriage_certificate(access_token, img_id):
         except Exception as e:
             return {"error": f"Ошибка обработки JSON: {str(e)}", "response": process_response.json()}
     else:
-        return {"error": f"Ошибка запроса на преобразование: {process_response.status_code}", "details": process_response.text}
+        return {"error": f"Ошибка запроса на преобразование: {process_response.status_code}",
+                "details": process_response.text}
+
 
 """Чек"""
+
+
 def process_reciept(access_token, img_id):
     """
     Функция для обработки чеков:
@@ -695,7 +730,6 @@ def process_reciept(access_token, img_id):
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ' + access_token
     }
-
 
     prompt = """
     Прочитай предоставленный текст из чека и преобразуй его в формат JSON с полями:
@@ -722,7 +756,7 @@ def process_reciept(access_token, img_id):
 
     В ответ дай только JSON который я запрашиваю
     """
-    
+
     # Шаг 1: Извлечение текста с изображения
     extract_text_payload = json.dumps({
         "model": "GigaChat-Max",
@@ -775,9 +809,13 @@ def process_reciept(access_token, img_id):
         except Exception as e:
             return {"error": f"Ошибка обработки JSON: {str(e)}", "response": process_response.json()}
     else:
-        return {"error": f"Ошибка запроса на преобразование: {process_response.status_code}", "details": process_response.text}
+        return {"error": f"Ошибка запроса на преобразование: {process_response.status_code}",
+                "details": process_response.text}
+
 
 """Выписка по чеку"""
+
+
 def process_reference(access_token, img_id):
     """
     Функция для обработки справок по чекам:
@@ -789,7 +827,6 @@ def process_reference(access_token, img_id):
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ' + access_token
     }
-
 
     prompt = """
     Прочитай предоставленный текст из выписки об операции и преобразуй его в формат JSON с полями:
@@ -810,7 +847,7 @@ def process_reference(access_token, img_id):
 
     В ответ дай только JSON который я запрашиваю
     """
-    
+
     # Шаг 1: Извлечение текста с изображения
     extract_text_payload = json.dumps({
         "model": "GigaChat-Max",
@@ -863,9 +900,13 @@ def process_reference(access_token, img_id):
         except Exception as e:
             return {"error": f"Ошибка обработки JSON: {str(e)}", "response": process_response.json()}
     else:
-        return {"error": f"Ошибка запроса на преобразование: {process_response.status_code}", "details": process_response.text}
+        return {"error": f"Ошибка запроса на преобразование: {process_response.status_code}",
+                "details": process_response.text}
+
 
 """Полис ДМС"""
+
+
 def process_insurance(access_token, img_id):
     """
     Функция для обработки полиса ДМС:
@@ -877,7 +918,6 @@ def process_insurance(access_token, img_id):
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ' + access_token
     }
-
 
     prompt = """
     Прочитай предоставленный текст из полиса ДМС и преобразуй его в формат JSON с полями:
@@ -900,7 +940,7 @@ def process_insurance(access_token, img_id):
 
     В ответ дай только JSON который я запрашиваю
     """
-    
+
     # Шаг 1: Извлечение текста с изображения
     extract_text_payload = json.dumps({
         "model": "GigaChat-Max",
@@ -953,4 +993,5 @@ def process_insurance(access_token, img_id):
         except Exception as e:
             return {"error": f"Ошибка обработки JSON: {str(e)}", "response": process_response.json()}
     else:
-        return {"error": f"Ошибка запроса на преобразование: {process_response.status_code}", "details": process_response.text}
+        return {"error": f"Ошибка запроса на преобразование: {process_response.status_code}",
+                "details": process_response.text}

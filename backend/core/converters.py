@@ -37,8 +37,11 @@ def get_order_list(item, order):
         if key in item:
             suffix = re.findall(r'\d+', item)
             suffix_value = int(suffix[-1]) if suffix else 0
+            if suffix_value > 101:
+                suffix_value = 0
             # Корректируем порядок, если есть числовой суффикс
-            return (order[key] + suffix_value - 1, suffix_value)
+            suff = (order[key] + suffix_value - 1, suffix_value)
+            return suff
     return (float('inf'), 0)
 
 class FileConverter:
