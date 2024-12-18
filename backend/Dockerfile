@@ -6,16 +6,16 @@ WORKDIR /backend
 
 # Копируем файлы requirements.txt и entrypoint.sh в контейнер
 COPY requirements.txt /backend/
-COPY entrypoint.sh /backend/
+# COPY entrypoint.sh /backend/
 
 RUN pip install --upgrade pip
 
 
 # Устанавливаем зависимости
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install -r requirements.txt
 
 # Копируем остальные файлы проекта в контейнер
-COPY . /backend/
+COPY . .
 
 # Устанавливаем переменные окружения
 ENV PYTHONUNBUFFERED=1
@@ -24,4 +24,4 @@ ENV PYTHONUNBUFFERED=1
 EXPOSE 8000
 
 # Команда для запуска контейнера
-ENTRYPOINT ["sh", "entrypoint.sh"]
+# ENTRYPOINT ["sh", "entrypoint.sh"]
