@@ -134,7 +134,10 @@ const fileSlice = createSlice({
       })
       .addCase(downloadFile.rejected, (state, action) => {
         state.downloadStatus = "failed";
-        state.downloadError = action.payload;
+        state.downloadError =
+          typeof action.payload === "string"
+            ? action.payload
+            : action.payload?.message || "Внутренняя ошибка сервера";
       });
   },
 });

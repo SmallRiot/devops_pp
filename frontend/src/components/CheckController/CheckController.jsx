@@ -16,6 +16,7 @@ import {
   updateCheck,
   updateFreeze,
   updateStatement,
+  uploadBankFile,
 } from "../../redux/slices/componentsCheckSlice";
 
 const CheckController = React.memo(({ component, index }) => {
@@ -51,7 +52,7 @@ const CheckController = React.memo(({ component, index }) => {
         );
       }
 
-      dispatch(uploadFile(newFile));
+      dispatch(uploadBankFile({ file: newFile, id: index }));
       dispatch(updateFreeze({ freeze: true, index: index }));
     }
   };
@@ -90,21 +91,22 @@ const CheckController = React.memo(({ component, index }) => {
               style={{ padding: "10px 45px", fontSize: "20px" }}
             />
           )}
-          {uploadCheckStatus === "succeeded" && component.downloadCheck && (
-            <div className={classes.requestBlock}>
-              <img src={success} />
-              <p>{component.nameCheck}</p>
-            </div>
-          )}
-          {uploadCheckStatus === "loading" && (
+          {component.uploadCheckStatus === "succeeded" &&
+            component.downloadCheck && (
+              <div className={classes.requestBlock}>
+                <img src={success} />
+                <p>{component.nameCheck}</p>
+              </div>
+            )}
+          {component.uploadCheckStatus === "loading" && (
             <div className={classes.requestBlock}>
               <TailSpin color="#148F2B" height={55} width={55} />
             </div>
           )}
-          {uploadCheckStatus === "failed" && (
+          {component.uploadCheckStatus === "failed" && (
             <div className={classes.requestBlock}>
               <img src={errorImg} />
-              <p>{uploadCheckError.message || uploadCheckError}</p>
+              <p>{component.uploadCheckError}</p>
             </div>
           )}
         </div>
@@ -128,21 +130,22 @@ const CheckController = React.memo(({ component, index }) => {
               freeze={!component.downloadStatement}
             />
           )}
-          {uploadCheckStatus === "succeeded" && component.downloadCheck && (
-            <div className={classes.requestBlock}>
-              <img src={success} />
-              <p>{component.nameCheck}</p>
-            </div>
-          )}
-          {uploadCheckStatus === "loading" && (
+          {component.uploadCheckStatus === "succeeded" &&
+            component.downloadCheck && (
+              <div className={classes.requestBlock}>
+                <img src={success} />
+                <p>{component.nameCheck}</p>
+              </div>
+            )}
+          {component.uploadCheckStatus === "loading" && (
             <div className={classes.requestBlock}>
               <TailSpin color="#148F2B" height={55} width={55} />
             </div>
           )}
-          {uploadCheckStatus === "failed" && (
+          {component.uploadCheckStatus === "failed" && (
             <div className={classes.requestBlock}>
               <img src={errorImg} />
-              <p>{uploadCheckError.message || uploadCheckError}</p>
+              <p>{component.uploadCheckError}</p>
             </div>
           )}
           <input
@@ -158,21 +161,22 @@ const CheckController = React.memo(({ component, index }) => {
               style={{ padding: "10px 45px", fontSize: "20px" }}
             />
           )}
-          {uploadStatus === "succeeded" && component.downloadStatement && (
-            <div className={classes.requestBlock}>
-              <img src={success} />
-              <p>{component.nameStatement}</p>
-            </div>
-          )}
-          {uploadStatus === "loading" && (
+          {component.uploadStatementStatus === "succeeded" &&
+            component.downloadStatement && (
+              <div className={classes.requestBlock}>
+                <img src={success} />
+                <p>{component.nameStatement}</p>
+              </div>
+            )}
+          {component.uploadStatementStatus === "loading" && (
             <div className={classes.requestBlock}>
               <TailSpin color="#148F2B" height={55} width={55} />
             </div>
           )}
-          {uploadStatus === "failed" && (
+          {component.uploadStatementStatus === "failed" && (
             <div className={classes.requestBlock}>
               <img src={errorImg} />
-              <p>{uploadError.message || uploadError}</p>
+              <p>{component.uploadStatementError}</p>
             </div>
           )}
         </div>

@@ -18,11 +18,7 @@ const MoreButton = ({ style, onClick, index, show }) => {
     (state) => state.file
   );
 
-  if (
-    component.paymentType === "cash" &&
-    component.downloadCheck &&
-    (uploadCheckStatus === "succeeded" || uploadCheckStatus == "failed")
-  ) {
+  if (component.paymentType === "cash" && component.downloadCheck) {
     show = true;
   }
 
