@@ -44,6 +44,12 @@
   font-size: 18px;
 }
 
+.right{
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
 .checkBox{
   height: 40px;
   width: 40px;

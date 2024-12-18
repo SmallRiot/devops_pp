@@ -41,7 +41,7 @@ export const downloadFile = createAsyncThunk(
         },
         withCredentials: true,
       });
-      console.log(response.data.path);
+
       return response.data;
     } catch (error) {
       const headers = {};
@@ -51,6 +51,29 @@ export const downloadFile = createAsyncThunk(
       console.log("Error: " + error.message);
       return error.response
         ? rejectWithValue({ errorMessage: error.message })
+        : rejectWithValue("Отсутствует соединение с сервером");
+    }
+  }
+);
+
+export const deleteFiles = createAsyncThunk(
+  "file/deleteFiles",
+  async (id, { rejectWithValue }) => {
+    try {
+      const response = await axios.delete(`${apiUrl}/api/api/data`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        withCredentials: true,
+      });
+
+      // return response.data;
+    } catch (error) {
+      if (error.status === 500) {
+        return rejectWithValue("Внутренняя ошибка сервера");
+      }
+      return error.response
+        ? rejectWithValue(error.response.data)
         : rejectWithValue("Отсутствует соединение с сервером");
     }
   }

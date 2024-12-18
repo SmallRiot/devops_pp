@@ -25,6 +25,7 @@ const Card = ({ obj }) => {
   };
   const fileInputRef = useRef(null);
   const handleUploadClick = () => {
+    fileInputRef.current.value = "";
     fileInputRef.current.click();
   };
   const handleUpload = () => {
@@ -68,19 +69,26 @@ const Card = ({ obj }) => {
       )}
       <div className={classes.downBlock}>
         {uploadStatus === "failed" && (
-          <div className={classes.rightBlock}>
-            <div
-              className={classes.checkBox}
-              style={{ backgroundColor: isRight ? "#148F2B" : "#FFFFFF" }}
-              onClick={() => setIsRight(!isRight)}
-            >
-              <img
-                src={jackdaw}
-                alt=""
-                style={{ display: isRight ? "block" : "none" }}
-              />
+          <div className={classes.right}>
+            <DownloadButton
+              onClick={handleUploadClick}
+              style={{ padding: "12px 15px", alignSelf: "flex-start" }}
+              text={"Загрузить ещё раз"}
+            />
+            <div className={classes.rightBlock}>
+              <div
+                className={classes.checkBox}
+                style={{ backgroundColor: isRight ? "#148F2B" : "#FFFFFF" }}
+                onClick={() => setIsRight(!isRight)}
+              >
+                <img
+                  src={jackdaw}
+                  alt=""
+                  style={{ display: isRight ? "block" : "none" }}
+                />
+              </div>
+              <p>Документ заполнен верно</p>
             </div>
-            <p>Документ заполнен верно</p>
           </div>
         )}
         <BorderButton

@@ -1,4 +1,4 @@
-import { downloadFile } from "../../redux/slices/fileSlice";
+import { downloadFile, deleteFiles } from "../../redux/slices/fileSlice";
 import BorderButton from "../BorderButton/BorderButton";
 import { useSelector, useDispatch } from "react-redux";
 import classes from "./DownloadPage.module.css";
@@ -15,6 +15,7 @@ const DownloadPage = () => {
   const handleDownload = () => {
     if (isRight) {
       dispatch(downloadFile("12"));
+      dispatch(deleteFiles());
     }
   };
 
