@@ -21,8 +21,60 @@
   width: 55px;
 }
 
-.paymentBlock{
+.paymentBlock {
   display: flex;
   flex-direction: column;
   gap: 20px;
+}
+
+@media (max-width: 768px) {
+
+  .question {
+    font-size: 20px;
+  }
+
+  .btn {
+    gap: 30px;
+  }
+
+  .requestBlock {
+    font-size: 16px;
+    gap: 15px;
+  }
+
+  .requestBlock img {
+    height: 40px;
+    width: 40px;
+  }
+
+  .paymentBlock {
+    gap: 15px;
+  }
+}
+
+@media (max-width: 480px) {
+
+  .question {
+    font-size: 18px;
+  }
+
+  .btn {
+    gap: 20px;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .requestBlock {
+    font-size: 14px;
+    gap: 10px;
+  }
+
+  .requestBlock img {
+    height: 30px;
+    width: 30px;
+  }
+
+  .paymentBlock {
+    gap: 10px;
+  }
 }

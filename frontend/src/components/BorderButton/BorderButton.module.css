@@ -6,7 +6,33 @@
   border-radius: 16px;
 }
 
-.content{ 
+.content {
   display: flex;
   gap: 50px;
+}
+
+@media (max-width: 768px) {
+
+  .btn {
+    padding: 10px 20px;
+    font-size: 20px;
+    border-radius: 14px;
+  }
+
+  .content {
+    gap: 30px;
+  }
+}
+
+@media (max-width: 480px) {
+
+  .btn {
+    padding: 8px 16px;
+    font-size: 18px;
+    border-radius: 12px;
+  }
+
+  .content {
+    gap: 20px;
+  }
 }

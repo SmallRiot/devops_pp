@@ -1,10 +1,11 @@
-.btn{
+.btn {
   display: inline-block;
   padding: 12px 24px 12px 24px;
   border: 1.5px solid #151515;
   border-radius: 18px;
   color: #151515;
   font-size: 24px;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .btn div {
@@ -13,10 +14,46 @@
   align-items: center;
 }
 
-.arrow{ 
+.arrow {
   font-size: 30px;
 }
 
-.btn:hover{
+.btn:hover {
   cursor: pointer;
+  background-color: #151515;
+  color: #FFFFFF;
+}
+
+@media (max-width: 768px) {
+
+  .btn {
+    padding: 10px 20px 10px 20px;
+    font-size: 20px;
+    border-radius: 15px;
+  }
+
+  .btn div {
+    gap: 20px;
+  }
+
+  .arrow {
+    font-size: 24px;
+  }
+}
+
+@media (max-width: 480px) {
+
+  .btn {
+    padding: 8px 16px 8px 16px;
+    font-size: 18px;
+    border-radius: 12px;
+  }
+
+  .btn div {
+    gap: 15px;
+  }
+
+  .arrow {
+    font-size: 20px;
+  }
 }

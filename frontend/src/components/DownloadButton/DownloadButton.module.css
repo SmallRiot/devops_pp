@@ -5,23 +5,36 @@
   color: #FFFFFF;
   font-size: 24px;
   cursor: pointer;
+  transition: opacity 0.2s;
 }
 
 .btn:hover {
   opacity: 0.9;
-  transition: 0.2s;
-  /* font-size: 25px; */
 }
 
-.btn:not(:hover) {
-  transition: 0.2s;
-}
-
-.btnDisable{
-  opacity: .5;
+.btnDisable {
+  opacity: 0.5;
   cursor: default;
 }
 
 .btnDisable:hover {
-  opacity: .5;
+  opacity: 0.5;
+}
+
+@media (max-width: 768px) {
+
+  .btn {
+    padding: 10px 50px;
+    font-size: 20px;
+    border-radius: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+
+  .btn {
+    padding: 8px 40px;
+    font-size: 18px;
+    border-radius: 12px;
+  }
 }

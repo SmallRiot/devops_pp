@@ -1,10 +1,9 @@
-.block{
+.block {
   display: flex;
   gap: 50px;
-  /* align-items: center; */
 }
 
-.radioBtn{
+.radioBtn {
   padding: 12px 15px;
   display: flex;
   gap: 40px;
@@ -15,13 +14,13 @@
   align-items: center;
 }
 
-.dot{
+.dot {
   display: inline-block;
   position: relative;
   line-height: 0;
 }
 
-.radioBtn .down{
+.radioBtn .down {
   display: inline-block;
   width: 28px;
   height: 28px;
@@ -40,11 +39,62 @@
   left: 25%;
 }
 
-.radioBtn .downActive{
+.radioBtn .downActive {
   background-color: #148F2B;
-  transition: 0.2s;}
+  transition: 0.2s;
+}
 
-.radioBtn .upActive{
+.radioBtn .upActive {
   display: inline-block;
   transition: 0.2s;
+}
+
+@media (max-width: 768px) {
+
+  .block {
+    gap: 30px;
+  }
+
+  .radioBtn {
+    padding: 10px 12px;
+    justify-content: space-between;
+    font-size: 18px;
+    border-radius: 14px;
+  }
+
+  .radioBtn .down {
+    width: 24px;
+    height: 24px;
+  }
+
+  .radioBtn .up {
+    width: 12px;
+    height: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+
+  .block {
+    gap: 20px;
+    flex-direction: column;
+  }
+
+  
+  .radioBtn {
+    padding: 8px 10px;
+
+    font-size: 16px;
+    border-radius: 12px;
+  }
+
+  .radioBtn .down {
+    width: 20px;
+    height: 20px;
+  }
+
+  .radioBtn .up {
+    width: 10px;
+    height: 10px;
+  }
 }

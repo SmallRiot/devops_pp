@@ -1,4 +1,4 @@
-.box{
+.box {
   height: 50px;
   width: 50px;
   display: flex;
@@ -6,9 +6,33 @@
   align-items: center;
 }
 
-.box hr{
+.box hr {
   color: #000000;
   size: 4px;
   width: 100%;
   margin: 0;
+}
+
+@media (max-width: 768px) {
+
+  .box {
+    height: 40px;
+    width: 40px;
+  }
+
+  .box hr {
+    size: 3px;
+  }
+}
+
+@media (max-width: 480px) {
+
+  .box {
+    height: 30px;
+    width: 30px;
+  }
+
+  .box hr {
+    size: 2px;
+  }
 }

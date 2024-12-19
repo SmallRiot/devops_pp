@@ -2,8 +2,29 @@
   display: flex;
   justify-content: space-between;
   margin-bottom: 32px;
-  /* gap: 12px; */
   align-items: center;
-  /* justify-content: flex-start; */
 }
 
+@media (max-width: 768px) {
+
+  .block {
+    margin-bottom: 20px;
+    gap: 10px;
+  }
+
+  .block>* {
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+
+  .block {
+    margin-bottom: 16px;
+    gap: 8px;
+  }
+
+  .block>* {
+    font-size: 14px;
+  }
+}

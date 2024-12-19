@@ -88,7 +88,7 @@ const CheckController = React.memo(({ component, index }) => {
             <DownloadButton
               onClick={handleUploadCheckClick}
               text={"Загрузите чек"}
-              style={{ padding: "10px 45px", fontSize: "20px" }}
+              // style={{ padding: "10px 45px", fontSize: "20px" }}
             />
           )}
           {component.uploadCheckStatus === "succeeded" &&
@@ -123,10 +123,10 @@ const CheckController = React.memo(({ component, index }) => {
             <DownloadButton
               onClick={handleUploadCheckClick}
               text={"Загрузите чек"}
-              style={{
-                padding: "10px 45px",
-                fontSize: "20px",
-              }}
+              // style={{
+              //   padding: "10px 45px",
+              //   fontSize: "20px",
+              // }}
               freeze={!component.downloadStatement}
             />
           )}
@@ -158,7 +158,7 @@ const CheckController = React.memo(({ component, index }) => {
             <DownloadButton
               onClick={handleUploadStatementClick}
               text={"Загрузите выписку"}
-              style={{ padding: "10px 45px", fontSize: "20px" }}
+              // style={{ padding: "10px 45px", fontSize: "20px" }}
             />
           )}
           {component.uploadStatementStatus === "succeeded" &&

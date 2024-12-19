@@ -52,7 +52,7 @@ const Card = ({ obj }) => {
         />
       )}
       {uploadStatus === "loading" && (
-        <div className={classes.requestBlock}>
+        <div className={`${classes.requestBlock} ${classes.loader}`}>
           <TailSpin color="#148F2B" height={100} width={100} />
         </div>
       )}
@@ -73,7 +73,7 @@ const Card = ({ obj }) => {
             <DownloadButton
               onClick={handleUploadClick}
               style={{ padding: "12px 15px", alignSelf: "flex-start" }}
-              text={"Загрузить ещё раз"}
+              text={"Повторить"}
             />
             <div className={classes.rightBlock}>
               <div

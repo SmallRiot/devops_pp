@@ -24,16 +24,16 @@ const RadioButtons = React.memo(({ component, index }) => {
   // );
   return (
     <div className={classes.block}>
-      <div className={classes.radioBtn}>
+      <div
+        className={classes.radioBtn}
+        onClick={() => {
+          if (!component.freeze) {
+            dispatch(updatePaymentType({ paymentType: "cash", index }));
+          }
+        }}
+      >
         <p>Наличными</p>
-        <div
-          className={classes.dot}
-          onClick={() => {
-            if (!component.freeze) {
-              dispatch(updatePaymentType({ paymentType: "cash", index }));
-            }
-          }}
-        >
+        <div className={classes.dot}>
           <span
             className={`${classes.down} ${
               component.paymentType === "cash" ? classes.downActive : ""
@@ -46,16 +46,16 @@ const RadioButtons = React.memo(({ component, index }) => {
           ></span>
         </div>
       </div>
-      <div className={classes.radioBtn}>
+      <div
+        className={classes.radioBtn}
+        onClick={() => {
+          if (!component.freeze) {
+            dispatch(updatePaymentType({ paymentType: "nonCash", index }));
+          }
+        }}
+      >
         <p>Безналичный расчет</p>
-        <div
-          className={classes.dot}
-          onClick={() => {
-            if (!component.freeze) {
-              dispatch(updatePaymentType({ paymentType: "nonCash", index }));
-            }
-          }}
-        >
+        <div className={classes.dot}>
           <span
             className={`${classes.down} ${
               component.paymentType === "nonCash" ? classes.downActive : ""

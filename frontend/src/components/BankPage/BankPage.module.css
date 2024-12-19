@@ -2,12 +2,35 @@
   padding: 20px 200px 0px 200px;
   display: flex;
   flex-direction: column;
-  /* align-items: center; */
 }
 
-.title{
+.title {
   font-size: 30px;
   font-weight: 800;
   margin-bottom: 50px;
   align-self: center;
+}
+
+@media (max-width: 768px) {
+
+  .wrapper {
+    padding: 20px 50px 0px 50px;
+  }
+
+  .title {
+    font-size: 24px;
+    margin-bottom: 30px;
+  }
+}
+
+@media (max-width: 480px) {
+
+  .wrapper {
+    padding: 20px 20px 0px 20px;
+  }
+
+  .title {
+    font-size: 20px;
+    margin-bottom: 20px;
+  }
 }
