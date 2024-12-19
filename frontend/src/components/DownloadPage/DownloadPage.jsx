@@ -11,11 +11,15 @@ const DownloadPage = () => {
     (state) => state.file
   );
   const [isRight, setIsRight] = useState(false);
+  useEffect(() => {
+    if (downloadStatus === "succeeded") {
+      dispatch(deleteFiles());
+    }
+  }, [downloadStatus]);
 
   const handleDownload = () => {
     if (isRight) {
       dispatch(downloadFile("12"));
-      dispatch(deleteFiles());
     }
   };
 
