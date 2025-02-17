@@ -77,7 +77,7 @@ def load_pdf(access_token, img_path):
 
 """ Для того, чтобы не хранить персональные данные и не перегружать API, все изоюбражения удаляются после обработки """
 def delete_img(access_token, img_id):
-  url = "https://gigachat.devices.sberbank.ru/api/v1/files/:" + img_id + "/delete"
+  url = "https://gigachat.devices.sberbank.ru/api/v1/files/" + img_id + "/delete"
 
   payload={}
 
